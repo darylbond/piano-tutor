@@ -1,0 +1,69 @@
+.play {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+}
+
+.play--message {
+  align-items: center;
+  text-align: center;
+  padding: var(--sp-10);
+  color: var(--c-text-soft);
+}
+
+.play__head {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+}
+
+.play__back {
+  text-decoration: none;
+  font-weight: 700;
+  color: var(--c-text-soft);
+  white-space: nowrap;
+}
+
+.play__titles {
+  flex: 1;
+  text-align: center;
+}
+
+.play__title {
+  margin: 0;
+  font-size: var(--fs-lg);
+}
+.play__composer {
+  color: var(--c-text-soft);
+  font-size: var(--fs-sm);
+}
+.play__level {
+  white-space: nowrap;
+}
+
+.play__controls {
+  display: flex;
+  gap: var(--sp-3);
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.play__tempo {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  justify-content: center;
+  font-weight: 700;
+  color: var(--c-text-soft);
+}
+.play__tempo input {
+  width: min(320px, 60vw);
+}
+
+.play__hint {
+  text-align: center;
+  color: var(--c-text-soft);
+  font-size: var(--fs-sm);
+  max-width: 52ch;
+  margin: 0 auto;
+}
