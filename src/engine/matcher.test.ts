@@ -35,14 +35,11 @@ describe("groupIntoSteps", () => {
 });
 
 describe("WaitModeMatcher", () => {
-  it("advances one melody note at a time", () => {
+  it("advances one melody note at a time, clean notes score hit", () => {
     const notes = [n(0, 60, 0), n(1, 62, 1), n(2, 64, 2)];
     const m = new WaitModeMatcher(notes);
 
     expect(m.cursorBeat()).toBe(0);
-    expect(m.handleEvent(heard(61))).toBe(false); // wrong note, no advance
-    expect(m.cursorBeat()).toBe(0);
-
     expect(m.handleEvent(heard(60))).toBe(true); // correct -> advance
     expect(m.cursorBeat()).toBe(1);
     expect(m.getVerdicts().get(0)).toBe("hit");
@@ -50,6 +47,22 @@ describe("WaitModeMatcher", () => {
     expect(m.handleEvent(heard(62))).toBe(true);
     expect(m.handleEvent(heard(64))).toBe(true);
     expect(m.isComplete()).toBe(true);
+    expect(m.getWrongCount()).toBe(0);
+  });
+
+  it("marks a note 'close' (not 'hit') when wrong keys were pressed first", () => {
+    const notes = [n(0, 60, 0), n(1, 62, 1)];
+    const m = new WaitModeMatcher(notes);
+
+    expect(m.handleEvent(heard(61))).toBe(false); // wrong
+    expect(m.handleEvent(heard(64))).toBe(false); // wrong again
+    expect(m.handleEvent(heard(60))).toBe(true); // right at last
+    expect(m.getVerdicts().get(0)).toBe("close");
+    expect(m.getWrongCount()).toBe(2);
+
+    // Next note played cleanly earns a full hit.
+    expect(m.handleEvent(heard(62))).toBe(true);
+    expect(m.getVerdicts().get(1)).toBe("hit");
   });
 
   it("requires every note of a chord before advancing", () => {

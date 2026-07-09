@@ -39,6 +39,10 @@ export class WaitModeMatcher {
   private satisfied = new Set<number>();
   private verdicts = new Map<number, NoteVerdict>();
   private opts: MatchOptions;
+  /** True if any wrong key was pressed while on the current step. */
+  private fumbledCurrentStep = false;
+  /** Total wrong key presses across the whole run, for the report. */
+  private wrongCount = 0;
 
   constructor(notes: ScoreNote[], opts: MatchOptions = DEFAULT_MATCH) {
     this.opts = opts;
@@ -65,9 +69,19 @@ export class WaitModeMatcher {
     return this.verdicts;
   }
 
+  /** How many wrong keys the student has pressed this run. */
+  getWrongCount(): number {
+    return this.wrongCount;
+  }
+
   /**
    * Process one heard note. Returns true if it advanced the cursor to a new step
    * (i.e. the current step just completed), so the caller can play a chime.
+   *
+   * A press that matches no note in the current step is a wrong press: it's
+   * counted, and it marks the step "fumbled" so the note earns partial credit
+   * ("close") rather than a clean "hit" — otherwise finishing would always score
+   * 100% no matter how many wrong keys were mashed.
    */
   handleEvent(heard: NoteEvent): boolean {
     if (this.isComplete()) return false;
@@ -78,18 +92,24 @@ export class WaitModeMatcher {
       if (this.satisfied.has(note.id)) continue;
       if (noteMatches(note, heard, this.opts)) {
         this.satisfied.add(note.id);
-        this.verdicts.set(note.id, "hit");
         matchedSomething = true;
         break; // one heard note satisfies at most one expected note
       }
     }
-    if (!matchedSomething) return false;
+    if (!matchedSomething) {
+      this.wrongCount++;
+      this.fumbledCurrentStep = true;
+      return false;
+    }
 
     // Advance when every note in the step has been satisfied.
     const allDone = step.every((n) => this.satisfied.has(n.id));
     if (allDone) {
+      const verdict: NoteVerdict = this.fumbledCurrentStep ? "close" : "hit";
+      for (const n of step) this.verdicts.set(n.id, verdict);
       this.stepIndex++;
       this.satisfied.clear();
+      this.fumbledCurrentStep = false;
       return true;
     }
     return false;
@@ -98,6 +118,8 @@ export class WaitModeMatcher {
   reset() {
     this.stepIndex = 0;
     this.satisfied.clear();
+    this.fumbledCurrentStep = false;
+    this.wrongCount = 0;
     for (const id of this.verdicts.keys()) this.verdicts.set(id, "pending");
   }
 }

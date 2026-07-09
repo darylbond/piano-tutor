@@ -227,7 +227,7 @@ export function PlayScreen() {
           targetMsRef.current = beatsToMs(matcher.cursorBeat(), song.bpm);
           const total = song.notes.length;
           const doneCount = [...matcher.getVerdicts().values()].filter(
-            (v) => v === "hit",
+            (v) => v === "hit" || v === "close",
           ).length;
           setProgressPct(Math.round((doneCount / total) * 100));
         }
