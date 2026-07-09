@@ -50,6 +50,9 @@ export interface MicLevel {
   rms: number;
   clarity: number;
   midi: number | null;
+  /** Cents deviation of the detected pitch from equal temperament (raw, for
+   *  calibrating an acoustic piano's tuning). Null when no clear pitch. */
+  cents: number | null;
 }
 
 export class MicNoteInput extends BaseNoteInput {
@@ -114,13 +117,17 @@ export class MicNoteInput extends BaseNoteInput {
     const [freq, clarity] = this.detector.findPitch(this.buffer, this.ctx.sampleRate);
 
     let midi: number | null = null;
+    let cents: number | null = null;
     if (clarity >= this.config.clarityThreshold && freq > 0) {
       const adjusted = freq * 2 ** (-this.config.tuningCents / 1200);
       const m = freqToMidi(adjusted).midi;
-      if (m >= this.config.minMidi && m <= this.config.maxMidi) midi = m;
+      if (m >= this.config.minMidi && m <= this.config.maxMidi) {
+        midi = m;
+        cents = freqToMidi(freq).cents; // raw deviation for calibration
+      }
     }
 
-    this.onLevel?.({ rms, clarity, midi });
+    this.onLevel?.({ rms, clarity, midi, cents });
 
     // Onset detection with hysteresis + a refractory window: fire on the rising
     // edge, then require both a dip below release AND a minimum time gap before

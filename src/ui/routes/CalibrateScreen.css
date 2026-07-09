@@ -1,0 +1,42 @@
+.cal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--sp-4);
+  max-width: 520px;
+  margin: 0 auto;
+  padding-top: var(--sp-4);
+}
+.cal h2 {
+  margin: 0;
+}
+.cal p {
+  color: var(--c-text-soft);
+  margin: 0;
+  max-width: 40ch;
+}
+.cal__hearing {
+  font-weight: 800;
+  color: var(--c-text);
+}
+.cal__meter {
+  width: min(360px, 80vw);
+  height: 16px;
+  background: var(--c-line);
+  border-radius: var(--r-pill);
+  overflow: hidden;
+}
+.cal__meter-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--c-green), var(--c-amber));
+  border-radius: var(--r-pill);
+  transition: width 80ms linear;
+}
+.cal__actions {
+  display: flex;
+  gap: var(--sp-3);
+  flex-wrap: wrap;
+  justify-content: center;
+}

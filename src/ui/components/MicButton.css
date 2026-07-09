@@ -61,3 +61,8 @@
   max-width: 40ch;
   text-align: center;
 }
+.mic__tune {
+  font-size: var(--fs-xs);
+  color: var(--c-text-soft);
+  font-weight: 700;
+}

@@ -17,6 +17,10 @@ interface SettingsState {
   volume: number;
   /** Mic onset sensitivity 0–1 (higher = triggers on quieter notes). */
   micSensitivity: number;
+  /** Tuning offset in cents from calibration (acoustic pianos drift). */
+  tuningCents: number;
+  /** Whether the first-run mic calibration has been completed. */
+  micCalibrated: boolean;
 
   setView: (view: MusicView) => void;
   setPlayMode: (mode: PlayMode) => void;
@@ -24,6 +28,8 @@ interface SettingsState {
   toggleKeyLabels: () => void;
   setVolume: (v: number) => void;
   setMicSensitivity: (v: number) => void;
+  setTuningCents: (c: number) => void;
+  setMicCalibrated: (v: boolean) => void;
 }
 
 /** Map a 0–1 sensitivity to concrete RMS attack/release thresholds. */
@@ -46,6 +52,8 @@ export const useSettings = create<SettingsState>()(
       showKeyLabels: true,
       volume: 0.8,
       micSensitivity: 0.5,
+      tuningCents: 0,
+      micCalibrated: false,
 
       setView: (view) => set({ view }),
       setPlayMode: (playMode) => set({ playMode }),
@@ -55,7 +63,10 @@ export const useSettings = create<SettingsState>()(
       setVolume: (volume) => set({ volume: Math.min(1, Math.max(0, volume)) }),
       setMicSensitivity: (micSensitivity) =>
         set({ micSensitivity: Math.min(1, Math.max(0, micSensitivity)) }),
+      setTuningCents: (tuningCents) =>
+        set({ tuningCents: Math.max(-100, Math.min(100, tuningCents)) }),
+      setMicCalibrated: (micCalibrated) => set({ micCalibrated }),
     }),
-    { name: "piano-tutor.settings", version: 2 },
+    { name: "piano-tutor.settings", version: 3 },
   ),
 );

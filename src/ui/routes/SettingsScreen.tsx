@@ -47,6 +47,9 @@ export function SettingsScreen() {
 
       <section className="settings__group">
         <h3>Microphone</h3>
+        <Link to="/calibrate" className="settings__cal-btn">
+          🎤 Tune microphone to your piano
+        </Link>
         <label className="settings__row">
           <span>Sensitivity</span>
           <input

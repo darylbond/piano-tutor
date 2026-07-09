@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { MicNoteInput, type MicLevel } from "@/audio/mic";
 import { midiToName } from "@/engine/music";
+import { Link } from "react-router-dom";
 import { useSettings, sensitivityToThresholds } from "@/store/settings";
 import "./MicButton.css";
 
@@ -17,16 +18,17 @@ interface MicButtonProps {
  * feedback for trust (PLAN §4.4). Never leaves the user staring at a dead UI.
  */
 export function MicButton({ mic, active, onToggle }: MicButtonProps) {
-  const [level, setLevel] = useState<MicLevel>({ rms: 0, clarity: 0, midi: null });
+  const [level, setLevel] = useState<MicLevel>({ rms: 0, clarity: 0, midi: null, cents: null });
   const [error, setError] = useState<string | null>(null);
   const barRef = useRef<HTMLDivElement>(null);
   const micSensitivity = useSettings((s) => s.micSensitivity);
   const setMicSensitivity = useSettings((s) => s.setMicSensitivity);
+  const tuningCents = useSettings((s) => s.tuningCents);
 
-  // Apply sensitivity to the (possibly running) mic whenever it changes.
+  // Apply sensitivity + tuning offset to the (possibly running) mic.
   useEffect(() => {
-    mic.setConfig(sensitivityToThresholds(micSensitivity));
-  }, [mic, micSensitivity]);
+    mic.setConfig({ ...sensitivityToThresholds(micSensitivity), tuningCents });
+  }, [mic, micSensitivity, tuningCents]);
 
   useEffect(() => {
     if (!active) return;
@@ -96,6 +98,7 @@ export function MicButton({ mic, active, onToggle }: MicButtonProps) {
         </label>
       )}
       {error && <span className="mic__error">{error}</span>}
+      <Link to="/calibrate" className="mic__tune">Tune microphone</Link>
     </div>
   );
 }
