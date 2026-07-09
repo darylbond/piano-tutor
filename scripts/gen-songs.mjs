@@ -371,25 +371,19 @@ B2 z EcB|A2 zBcd|A6|`,
     title: "Greensleeves",
     composer: "Traditional",
     level: 4,
-    bpm: 108,
-    beatsPerMeasure: 3,
+    bpm: 96,
     reps: 2,
     license: "PD",
-    attribution: "Traditional English (c. 1580). Public domain. Engraving © Piano Tutor, CC0.",
+    attribution: "Traditional English (c. 1580). Public domain. ABC from The Session (CC0).",
     blurb: "A haunting Tudor melody.",
-    right:
-      // Verse, first half
-      "A4:1 | C5:2 D5:1 | E5:1.5 F5:0.5 E5:1 | D5:2 B4:1 | G4:1.5 A4:0.5 B4:1 |" +
-      "C5:2 A4:1 | A4:1.5 G#4:0.5 A4:1 | B4:2 E4:1 |" +
-      // Verse, second half
-      "A4:1 | C5:2 D5:1 | E5:1.5 F5:0.5 E5:1 | D5:2 B4:1 | G4:1.5 A4:0.5 B4:1 |" +
-      "C5:1 B4:1 A4:1 | G#4:1 F#4:1 G#4:1 | A4:3 |" +
-      // Chorus, first half
-      "D5:2 F5:1 | F5:1.5 E5:0.5 D5:1 | B4:2 G4:1 | G4:1.5 A4:0.5 B4:1 |" +
-      "C5:2 A4:1 | A4:1.5 G#4:0.5 A4:1 | B4:2 E4:1 |" +
-      // Chorus, second half
-      "D5:2 F5:1 | F5:1.5 E5:0.5 D5:1 | B4:2 G4:1 | G4:1.5 A4:0.5 B4:1 |" +
-      "C5:1 B4:1 A4:1 | G#4:1 F#4:1 G#4:1 | A4:3",
+    // Verified public-domain ABC (A dorian), full verse + chorus.
+    abc: `M:6/8
+L:1/8
+K:Ador
+AB|c2c c>de|dBG G>AB|c2A A>Bc|B2^G E2B|
+c2c c>de|dBG G>AB|c>BA B^G2|A3 z:|
+ef|g2g g>fe|d>BG G2g|a2b c'ba|g>ee e2f|
+g2g g>fe|d>BG GAB|c>BA B^G2|A3 z|`,
   },
   {
     id: "habanera",

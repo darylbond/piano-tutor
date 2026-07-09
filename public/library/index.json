@@ -298,13 +298,13 @@
     "title": "Greensleeves",
     "composer": "Traditional",
     "level": 4,
-    "bpm": 108,
+    "bpm": 96,
     "beatsPerMeasure": 3,
     "hands": [
       "right"
     ],
     "license": "PD",
-    "attribution": "Traditional English (c. 1580). Public domain. Engraving © Piano Tutor, CC0.",
+    "attribution": "Traditional English (c. 1580). Public domain. ABC from The Session (CC0).",
     "blurb": "A haunting Tudor melody."
   },
   {

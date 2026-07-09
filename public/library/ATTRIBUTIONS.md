@@ -23,6 +23,6 @@ All bundled music is public domain or openly licensed.
 - **Michael, Row the Boat Ashore** — Traditional spiritual. Public domain. Engraving © Piano Tutor, CC0.
 - **Deck the Halls** — Traditional Welsh carol. Public domain. Engraving © Piano Tutor, CC0.
 - **Canon in D** — Pachelbel, Canon in D (c. 1680). Public domain. Engraving © Piano Tutor, CC0.
-- **Greensleeves** — Traditional English (c. 1580). Public domain. Engraving © Piano Tutor, CC0.
+- **Greensleeves** — Traditional English (c. 1580). Public domain. ABC from The Session (CC0).
 - **Habanera (from Carmen)** — Bizet, 'Habanera' from Carmen (1875). Public domain. Engraving © Piano Tutor, CC0.
 - **Rondo alla Turca (Theme)** — Mozart, 'Rondo alla Turca' from Sonata K.331 (1783). Public domain. Engraving © Piano Tutor, CC0.

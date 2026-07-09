@@ -15,20 +15,33 @@ const LETTER_SEMITONE = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
 // Key signature → set of letters that are sharp (+1) or flat (-1).
 const SHARP_ORDER = ["F", "C", "G", "D", "A", "E", "B"];
 const FLAT_ORDER = ["B", "E", "A", "D", "G", "C", "F"];
-const KEY_ACCIDENTALS = {
-  // majors
+// Fifths (sharps +, flats −) for each major tonic.
+const TONIC_FIFTHS = {
   C: 0, G: 1, D: 2, A: 3, E: 4, B: 5, "F#": 6, "C#": 7,
-  F: -1, Bb: -2, Eb: -3, Ab: -4, Db: -5,
-  // minors (relative) — map to same accidental count
-  Am: 0, Em: 1, Bm: 2, "F#m": 3, "C#m": 4, Dm: -1, Gm: -2, Cm: -3,
+  F: -1, Bb: -2, Eb: -3, Ab: -4, Db: -5, Gb: -6, Cb: -7,
+};
+// Mode offset from the major (ionian) key on the same tonic.
+const MODE_OFFSET = {
+  maj: 0, ion: 0, ionian: 0,
+  min: -3, aeo: -3, aeolian: -3, m: -3,
+  dor: -2, dorian: -2,
+  phr: -4, phrygian: -4,
+  lyd: 1, lydian: 1,
+  mix: -1, mixolydian: -1,
+  loc: -5, locrian: -5,
 };
 
 function keyAccidentalMap(key) {
   const norm = key.replace(/\s+/g, "");
-  const n = KEY_ACCIDENTALS[norm] ?? 0;
+  const m = /^([A-G][#b]?)(.*)$/.exec(norm);
   const map = {};
-  if (n > 0) for (let i = 0; i < n; i++) map[SHARP_ORDER[i]] = 1;
-  else if (n < 0) for (let i = 0; i < -n; i++) map[FLAT_ORDER[i]] = -1;
+  if (!m) return map;
+  const tonic = m[1];
+  const modeRaw = m[2].toLowerCase().slice(0, 3); // "dor", "mix", "min"…
+  const offset = m[2] ? (MODE_OFFSET[m[2].toLowerCase()] ?? MODE_OFFSET[modeRaw] ?? 0) : 0;
+  const fifths = (TONIC_FIFTHS[tonic] ?? 0) + offset;
+  if (fifths > 0) for (let i = 0; i < fifths; i++) map[SHARP_ORDER[i]] = 1;
+  else if (fifths < 0) for (let i = 0; i < -fifths; i++) map[FLAT_ORDER[i]] = -1;
   return map;
 }
 
