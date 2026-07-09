@@ -8,6 +8,9 @@ import { WaitModeMatcher } from "@/engine/matcher";
 import { beatsToMs } from "@/engine/music";
 import { NoteRainView } from "@/ui/components/NoteRainView";
 import { BigButton } from "@/ui/components/BigButton";
+import { MicButton } from "@/ui/components/MicButton";
+import { MicNoteInput } from "@/audio/mic";
+import { NoteRainRenderer } from "@/engine/note-rain";
 import { useSettings } from "@/store/settings";
 import "./PlayScreen.css";
 
@@ -27,9 +30,19 @@ export function PlayScreen() {
   const clockRef = useRef(new TransportClock());
   const synthRef = useRef(new Synth());
   const matcherRef = useRef<WaitModeMatcher | null>(null);
+  const micRef = useRef<MicNoteInput | null>(null);
+  const rendererRef = useRef<NoteRainRenderer | null>(null);
+  const [micOn, setMicOn] = useState(false);
   const endMsRef = useRef(0);
   const modeRef = useRef<Mode>("idle");
   modeRef.current = mode;
+
+  // Lazily create the mic input once; dispose on unmount.
+  if (!micRef.current) micRef.current = new MicNoteInput();
+  useEffect(() => {
+    const mic = micRef.current!;
+    return () => mic.dispose();
+  }, []);
 
   // For wait-mode: the displayed playhead eases toward the matcher's cursor.
   const displayMsRef = useRef(0);
@@ -107,22 +120,26 @@ export function PlayScreen() {
   function stopAll() {
     synthRef.current.stop();
     clockRef.current.pause();
+    micRef.current?.stop();
+    setMicOn(false);
     matcherRef.current = null;
     setMode("idle");
   }
 
-  const handleKeyPress = useCallback(
-    (midi: number) => {
+  // Core note handler shared by the on-screen keyboard and the microphone.
+  const handleNote = useCallback(
+    (midi: number, opts: { audioFeedback: boolean; source: "keyboard" | "mic" }) => {
       const matcher = matcherRef.current;
       if (!song) return;
-      // Always give audio feedback for the tapped key.
-      synthRef.current.playNote(midi, 350);
+      // The on-screen keyboard makes its own sound; a real piano already did.
+      if (opts.audioFeedback) synthRef.current.playNote(midi, 350);
+      rendererRef.current?.lightKey(midi, getTimeMs());
       if (modeRef.current !== "along" || !matcher) return;
 
       const advanced = matcher.handleEvent({
         midi,
         timeMs: performance.now(),
-        source: "keyboard",
+        source: opts.source,
       });
       if (advanced) {
         if (matcher.isComplete()) {
@@ -139,8 +156,22 @@ export function PlayScreen() {
         }
       }
     },
-    [song],
+    [song, getTimeMs],
   );
+
+  const handleKeyPress = useCallback(
+    (midi: number) => handleNote(midi, { audioFeedback: true, source: "keyboard" }),
+    [handleNote],
+  );
+
+  // Route microphone onsets into the same matcher as taps.
+  useEffect(() => {
+    const mic = micRef.current!;
+    const unsub = mic.subscribe((e) =>
+      handleNote(e.midi, { audioFeedback: false, source: "mic" }),
+    );
+    return unsub;
+  }, [handleNote]);
 
   if (error) {
     return (
@@ -180,6 +211,7 @@ export function PlayScreen() {
         verdicts={verdictsRef.current}
         showKeyLabels={showKeyLabels}
         onKeyPress={handleKeyPress}
+        rendererRef={(r) => (rendererRef.current = r)}
       />
 
       <div className="play__controls">
@@ -198,6 +230,14 @@ export function PlayScreen() {
           </BigButton>
         )}
       </div>
+
+      {mode === "along" && (
+        <MicButton
+          mic={micRef.current!}
+          active={micOn}
+          onToggle={setMicOn}
+        />
+      )}
 
       {mode === "done" && (
         <p className="play__cheer">🎉 Nice playing! Want to go again?</p>
