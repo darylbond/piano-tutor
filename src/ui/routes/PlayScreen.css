@@ -66,6 +66,16 @@
   margin: 0;
 }
 
+.play__midi {
+  align-self: center;
+  background: color-mix(in srgb, var(--c-green) 16%, var(--c-card));
+  color: var(--c-text);
+  font-weight: 700;
+  font-size: var(--fs-sm);
+  padding: var(--sp-1) var(--sp-4);
+  border-radius: var(--r-pill);
+}
+
 .play__bar {
   display: flex;
   align-items: center;

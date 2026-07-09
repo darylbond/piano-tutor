@@ -1,5 +1,1 @@
-- piano keys don't light up in sync with rain fall keys in listen mode
-- hitting keys before pressing listen or play along do not un-highlight after pressing
-- play along sometimes detects the note for too long so a single press is registered as two or more.
 - the library needs to be larger (but this can wait)
-- the interface needs to suit a tablet sitting on a keyboard sheet music stand, so no scrolling

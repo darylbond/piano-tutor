@@ -12,6 +12,7 @@ import { BigButton } from "@/ui/components/BigButton";
 import { MicButton } from "@/ui/components/MicButton";
 import { ReportCard } from "@/ui/components/ReportCard";
 import { MicNoteInput } from "@/audio/mic";
+import { MidiNoteInput } from "@/audio/midi";
 import { NoteRainRenderer } from "@/engine/note-rain";
 import { useSettings } from "@/store/settings";
 import { useProgress } from "@/store/progress";
@@ -38,8 +39,10 @@ export function PlayScreen() {
   const synthRef = useRef(new Synth());
   const matcherRef = useRef<WaitModeMatcher | null>(null);
   const micRef = useRef<MicNoteInput | null>(null);
+  const midiRef = useRef<MidiNoteInput | null>(null);
   const rendererRef = useRef<NoteRainRenderer | null>(null);
   const [micOn, setMicOn] = useState(false);
+  const [midiDevice, setMidiDevice] = useState<string | null>(null);
   const endMsRef = useRef(0);
   const modeRef = useRef<Mode>("idle");
   modeRef.current = mode;
@@ -137,7 +140,7 @@ export function PlayScreen() {
 
   // Core note handler shared by the on-screen keyboard and the microphone.
   const handleNote = useCallback(
-    (midi: number, opts: { audioFeedback: boolean; source: "keyboard" | "mic" }) => {
+    (midi: number, opts: { audioFeedback: boolean; source: "keyboard" | "mic" | "midi" }) => {
       const matcher = matcherRef.current;
       if (!song) return;
       // The on-screen keyboard makes its own sound; a real piano already did.
@@ -191,14 +194,43 @@ export function PlayScreen() {
     [handleNote],
   );
 
+  // Keep a stable reference to the latest handler so input subscriptions can be
+  // set up once on mount without re-requesting devices when the song changes.
+  const handleNoteRef = useRef(handleNote);
+  handleNoteRef.current = handleNote;
+
   // Route microphone onsets into the same matcher as taps.
   useEffect(() => {
     const mic = micRef.current!;
-    const unsub = mic.subscribe((e) =>
-      handleNote(e.midi, { audioFeedback: false, source: "mic" }),
+    return mic.subscribe((e) =>
+      handleNoteRef.current(e.midi, { audioFeedback: false, source: "mic" }),
     );
-    return unsub;
-  }, [handleNote]);
+  }, []);
+
+  // Auto-detect a MIDI piano and route its notes into the matcher too.
+  useEffect(() => {
+    if (!MidiNoteInput.isSupported()) return;
+    const midi = new MidiNoteInput();
+    midiRef.current = midi;
+    let unsub: (() => void) | undefined;
+    const setDevice = (a: boolean) =>
+      setMidiDevice(a ? midi.deviceNames()[0] ?? "MIDI piano" : null);
+    midi
+      .listen()
+      .then((available) => {
+        setDevice(available);
+        midi.onAvailability(setDevice);
+        unsub = midi.subscribe((e) =>
+          handleNoteRef.current(e.midi, { audioFeedback: true, source: "midi" }),
+        );
+      })
+      .catch(() => setMidiDevice(null));
+    return () => {
+      unsub?.();
+      midi.dispose();
+      midiRef.current = null;
+    };
+  }, []);
 
   if (error) {
     return (
@@ -225,6 +257,12 @@ export function PlayScreen() {
         </div>
         <span className="play__level">{"⭐".repeat(song.level)}</span>
       </div>
+
+      {midiDevice && (
+        <div className="play__midi" title={midiDevice}>
+          🎹 Piano connected: {midiDevice}
+        </div>
+      )}
 
       {showReport ? (
         <div className="play__report-wrap">
