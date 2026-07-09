@@ -6,8 +6,9 @@ import { isExerciseId } from "@/lessons/exercises";
 import { TransportClock } from "@/engine/clock";
 import { Synth } from "@/engine/synth";
 import { WaitModeMatcher } from "@/engine/matcher";
+import { RhythmMatcher } from "@/engine/rhythm";
 import { scorePlaythrough, type PlayResult } from "@/engine/scorer";
-import { beatsToMs } from "@/engine/music";
+import { beatsToMs, msToBeats } from "@/engine/music";
 import { NoteRainView } from "@/ui/components/NoteRainView";
 import { BigButton } from "@/ui/components/BigButton";
 import { MicButton } from "@/ui/components/MicButton";
@@ -19,7 +20,7 @@ import { useSettings } from "@/store/settings";
 import { useProgress } from "@/store/progress";
 import "./PlayScreen.css";
 
-type Mode = "idle" | "listen" | "along" | "done";
+type Mode = "idle" | "listen" | "along" | "rhythm" | "done";
 
 export function PlayScreen() {
   const { songId } = useParams<{ songId: string }>();
@@ -39,6 +40,9 @@ export function PlayScreen() {
   const clockRef = useRef(new TransportClock());
   const synthRef = useRef(new Synth());
   const matcherRef = useRef<WaitModeMatcher | null>(null);
+  const rhythmRef = useRef<RhythmMatcher | null>(null);
+  const lastBeatRef = useRef<number>(-999);
+  const lastModeRef = useRef<"along" | "rhythm">("along");
   const micRef = useRef<MicNoteInput | null>(null);
   const midiRef = useRef<MidiNoteInput | null>(null);
   const rendererRef = useRef<NoteRainRenderer | null>(null);
@@ -90,6 +94,31 @@ export function PlayScreen() {
     return () => window.clearInterval(id);
   }, [mode]);
 
+  // Rhythm mode: the clock runs; grade timing, click the metronome, mark misses.
+  useEffect(() => {
+    if (mode !== "rhythm" || !song) return;
+    const id = window.setInterval(() => {
+      const rhythm = rhythmRef.current;
+      if (!rhythm) return;
+      const t = clockRef.current.now();
+
+      // Metronome: click once per beat (including the count-in's negative beats).
+      const beat = Math.floor(msToBeats(t, song.bpm));
+      if (beat !== lastBeatRef.current) {
+        lastBeatRef.current = beat;
+        synthRef.current.playNote(beat % song.beatsPerMeasure === 0 ? 84 : 79, 60);
+      }
+
+      rhythm.update(t);
+      rendererRef.current?.setVerdicts(rhythm.getVerdicts());
+      setProgressPct(Math.min(100, Math.max(0, (t / endMsRef.current) * 100)));
+
+      if (t >= endMsRef.current + 600) finishRun(rhythm.getVerdicts());
+    }, 60);
+    return () => window.clearInterval(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mode, song]);
+
   // The renderer calls this every frame; branch on the active mode.
   const getTimeMs = useCallback(() => {
     if (modeRef.current === "along") {
@@ -126,8 +155,31 @@ export function PlayScreen() {
     verdictsRef.current = matcher.getVerdicts();
     displayMsRef.current = 0;
     targetMsRef.current = beatsToMs(matcher.cursorBeat(), song.bpm);
+    lastModeRef.current = "along";
     setProgressPct(0);
     setMode("along");
+  }
+
+  function startRhythm() {
+    if (!song) return;
+    setResult(null);
+    synthRef.current.stop();
+    synthRef.current.ensureContext();
+    synthRef.current.setVolume(useSettings.getState().volume);
+    const rhythm = new RhythmMatcher(song.notes, song.bpm);
+    rhythmRef.current = rhythm;
+    matcherRef.current = null;
+    verdictsRef.current = rhythm.getVerdicts();
+    // One-bar count-in: start the clock before beat 0 so kids can find the beat.
+    const countInMs = beatsToMs(song.beatsPerMeasure, song.bpm);
+    lastBeatRef.current = -999;
+    const clock = clockRef.current;
+    clock.setRate(tempoScale);
+    clock.seek(-countInMs);
+    clock.start();
+    lastModeRef.current = "rhythm";
+    setProgressPct(0);
+    setMode("rhythm");
   }
 
   function stopAll() {
@@ -136,6 +188,7 @@ export function PlayScreen() {
     micRef.current?.stop();
     setMicOn(false);
     matcherRef.current = null;
+    rhythmRef.current = null;
     setMode("idle");
   }
 
@@ -147,6 +200,17 @@ export function PlayScreen() {
       // The on-screen keyboard makes its own sound; a real piano already did.
       if (opts.audioFeedback) synthRef.current.playNote(midi, 350);
       rendererRef.current?.lightKey(midi);
+
+      // Rhythm mode: grade timing against the running clock.
+      if (modeRef.current === "rhythm" && rhythmRef.current) {
+        rhythmRef.current.handleEvent(
+          { midi, timeMs: performance.now(), source: opts.source },
+          clockRef.current.now(),
+        );
+        rendererRef.current?.setVerdicts(rhythmRef.current.getVerdicts());
+        return;
+      }
+
       if (modeRef.current !== "along" || !matcher) return;
 
       const advanced = matcher.handleEvent({
@@ -158,7 +222,7 @@ export function PlayScreen() {
         if (matcher.isComplete()) {
           targetMsRef.current = endMsRef.current;
           setProgressPct(100);
-          finishAlong(matcher);
+          finishRun(matcher.getVerdicts());
         } else {
           targetMsRef.current = beatsToMs(matcher.cursorBeat(), song.bpm);
           const total = song.notes.length;
@@ -172,10 +236,9 @@ export function PlayScreen() {
     [song, getTimeMs],
   );
 
-  // Score a completed wait-mode run, persist it, and show the report card.
-  function finishAlong(matcher: WaitModeMatcher) {
+  // Score a completed run (wait or rhythm), persist it, and show the report card.
+  function finishRun(verdicts: Map<number, NoteVerdict>) {
     if (!song) return;
-    const verdicts = matcher.getVerdicts();
     const scored = song.notes.map((n) => ({
       verdict: verdicts.get(n.id) ?? "missed",
       measure: n.measure,
@@ -186,6 +249,8 @@ export function PlayScreen() {
     recordPlay(song.id, { stars: r.stars, accuracy: r.accuracy }, Date.now());
     micRef.current?.stop();
     setMicOn(false);
+    rhythmRef.current = null;
+    matcherRef.current = null;
     setResult(r);
     setMode("done");
   }
@@ -245,7 +310,8 @@ export function PlayScreen() {
 
   const low = Math.min(...song.notes.map((n) => n.midi)) - 2;
   const high = Math.max(...song.notes.map((n) => n.midi)) + 2;
-  const playing = mode === "listen" || mode === "along";
+  const playing = mode === "listen" || mode === "along" || mode === "rhythm";
+  const usingMic = mode === "along" || mode === "rhythm";
   const showReport = mode === "done" && result;
   const isExercise = isExerciseId(song.id);
   const backTo = isExercise ? "/practice" : "/library";
@@ -274,7 +340,7 @@ export function PlayScreen() {
           <ReportCard
             result={result}
             isNewBest={isNewBest}
-            onPlayAgain={startAlong}
+            onPlayAgain={lastModeRef.current === "rhythm" ? startRhythm : startAlong}
             onBackToLibrary={() => navigate(backTo)}
           />
         </div>
@@ -306,6 +372,9 @@ export function PlayScreen() {
                   <BigButton variant="secondary" icon="🎹" onClick={startAlong}>
                     Play along
                   </BigButton>
+                  <BigButton variant="ghost" icon="🥁" onClick={startRhythm}>
+                    Keep the beat
+                  </BigButton>
                 </>
               ) : (
                 <BigButton variant="ghost" icon="⏹" onClick={stopAll}>
@@ -329,7 +398,7 @@ export function PlayScreen() {
             </label>
           </div>
 
-          {mode === "along" && (
+          {usingMic && (
             <MicButton mic={micRef.current!} active={micOn} onToggle={setMicOn} />
           )}
         </>
