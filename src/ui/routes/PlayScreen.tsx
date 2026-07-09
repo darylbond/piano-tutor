@@ -46,6 +46,12 @@ export function PlayScreen() {
   const synthRef = useRef(new Synth());
   const matcherRef = useRef<WaitModeMatcher | null>(null);
   const rhythmRef = useRef<RhythmMatcher | null>(null);
+  // Rhythm mode runs entirely on the AUDIO clock so the metronome, the falling
+  // notes, and grading share one hardware-steady timebase (they can't drift
+  // apart or speed up under load). These hold the audio time (s) of playhead 0
+  // and the playback rate; the playhead is derived from them each frame.
+  const rhythmZeroRef = useRef(0);
+  const rhythmRateRef = useRef(1);
   const lastModeRef = useRef<"along" | "rhythm">("along");
   const micRef = useRef<MicNoteInput | null>(null);
   const midiRef = useRef<MidiNoteInput | null>(null);
@@ -106,7 +112,7 @@ export function PlayScreen() {
     const id = window.setInterval(() => {
       const rhythm = rhythmRef.current;
       if (!rhythm) return;
-      const t = clockRef.current.now();
+      const t = rhythmPlayheadMs();
       rhythm.update(t);
       syncVerdicts(rhythm.getVerdicts());
       setProgressPct(Math.min(100, Math.max(0, (t / endMsRef.current) * 100)));
@@ -122,6 +128,11 @@ export function PlayScreen() {
     next.forEach((v, k) => verdictsRef.current.set(k, v));
   }
 
+  // Current rhythm-mode playhead (ms) derived from the audio clock. Negative
+  // during the count-in. Rate-scaled so the speed slider still applies.
+  const rhythmPlayheadMs = () =>
+    (synthRef.current.now() - rhythmZeroRef.current) * rhythmRateRef.current * 1000;
+
   // The renderer calls this every frame; branch on the active mode.
   const getTimeMs = useCallback(() => {
     if (modeRef.current === "along") {
@@ -130,6 +141,7 @@ export function PlayScreen() {
       displayMsRef.current += (target - displayMsRef.current) * 0.18;
       return displayMsRef.current;
     }
+    if (modeRef.current === "rhythm") return rhythmPlayheadMs();
     return clockRef.current.now();
   }, []);
 
@@ -177,20 +189,19 @@ export function PlayScreen() {
     rhythmRef.current = rhythm;
     matcherRef.current = null;
     verdictsRef.current = rhythm.getVerdicts();
-    // One-bar count-in: start the clock before beat 0 so kids can find the beat.
+    // Everything runs on the audio clock. Anchor playhead 0 one count-in bar
+    // ahead of "now" (in playhead time, rate-scaled to wall time), then schedule
+    // the whole metronome on that same clock — so ticks and notes stay locked.
     const countInMs = beatsToMs(song.beatsPerMeasure, song.bpm);
-    const clock = clockRef.current;
-    clock.setRate(tempoScale);
-    clock.seek(-countInMs);
-    clock.start();
-    // Pre-schedule the entire metronome on the audio clock (steady tempo,
-    // immune to key-hit jank), from the count-in through the end of the piece.
+    const rate = tempoScale;
+    rhythmRateRef.current = rate;
+    rhythmZeroRef.current = synthRef.current.now() + countInMs / 1000 / rate;
     synthRef.current.scheduleMetronome(
       song.bpm,
       -countInMs,
       endMsRef.current,
       song.beatsPerMeasure,
-      tempoScale,
+      rate,
     );
     lastModeRef.current = "rhythm";
     setProgressPct(0);
@@ -236,11 +247,12 @@ export function PlayScreen() {
       if (opts.audioFeedback) synthRef.current.playNote(midi, 350);
       rendererRef.current?.lightKey(midi);
 
-      // Rhythm mode: grade timing against the running clock.
+      // Rhythm mode: grade timing against the audio playhead (same clock the
+      // metronome and falling notes use).
       if (modeRef.current === "rhythm" && rhythmRef.current) {
         rhythmRef.current.handleEvent(
           { midi, timeMs: performance.now(), source: opts.source },
-          clockRef.current.now(),
+          rhythmPlayheadMs(),
         );
         syncVerdicts(rhythmRef.current.getVerdicts());
         return;
