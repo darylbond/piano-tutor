@@ -12,6 +12,8 @@ interface NoteRainViewProps {
   getTimeMs: () => number;
   verdicts?: Map<number, NoteVerdict>;
   showKeyLabels?: boolean;
+  /** Show the on-canvas frame-time overlay. */
+  debug?: boolean;
   /** Imperative handle so parents can flash keys on live input. */
   rendererRef?: (r: NoteRainRenderer | null) => void;
   /** Called when the user taps a key on the on-screen keyboard. */
@@ -26,6 +28,7 @@ export function NoteRainView({
   getTimeMs,
   verdicts,
   showKeyLabels = true,
+  debug = false,
   rendererRef,
   onKeyPress,
 }: NoteRainViewProps) {
@@ -36,6 +39,8 @@ export function NoteRainView({
   getTimeRef.current = getTimeMs;
   const onKeyPressRef = useRef(onKeyPress);
   onKeyPressRef.current = onKeyPress;
+  const debugRef = useRef(debug);
+  debugRef.current = debug;
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -47,6 +52,7 @@ export function NoteRainView({
       bpm,
       showKeyLabels,
     });
+    renderer.setDebug(debugRef.current);
     rendererObj.current = renderer;
     rendererRef?.(renderer);
 
@@ -92,6 +98,10 @@ export function NoteRainView({
   useEffect(() => {
     rendererObj.current?.setShowLabels(showKeyLabels);
   }, [showKeyLabels]);
+
+  useEffect(() => {
+    rendererObj.current?.setDebug(debug);
+  }, [debug]);
 
   return (
     <div className="note-rain">

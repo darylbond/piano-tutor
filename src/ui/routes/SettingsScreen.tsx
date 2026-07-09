@@ -12,6 +12,8 @@ export function SettingsScreen() {
   const toggleKeyLabels = useSettings((s) => s.toggleKeyLabels);
   const micSensitivity = useSettings((s) => s.micSensitivity);
   const setMicSensitivity = useSettings((s) => s.setMicSensitivity);
+  const perfOverlay = useSettings((s) => s.perfOverlay);
+  const setPerfOverlay = useSettings((s) => s.setPerfOverlay);
 
   const [attributions, setAttributions] = useState<SongMeta[]>([]);
   useEffect(() => {
@@ -90,6 +92,19 @@ export function SettingsScreen() {
             ))}
           </ul>
         </details>
+        <label className="settings__row settings__row--switch">
+          <span>Show performance overlay</span>
+          <input
+            type="checkbox"
+            checked={perfOverlay}
+            onChange={(e) => setPerfOverlay(e.target.checked)}
+          />
+        </label>
+        <p className="settings__hint">
+          Draws frames-per-second and timing on the note-rain view — handy for
+          checking smoothness on an older tablet.
+        </p>
+
         <p className="settings__foot">
           Made with ♥ as free software (MIT). Music is public domain or openly
           licensed.

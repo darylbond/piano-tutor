@@ -41,6 +41,7 @@ export function PlayScreen() {
   const setTempoScale = useSettings((s) => s.setTempoScale);
   const view = useSettings((s) => s.view);
   const setView = useSettings((s) => s.setView);
+  const perfOverlay = useSettings((s) => s.perfOverlay);
 
   const clockRef = useRef(new TransportClock());
   const synthRef = useRef(new Synth());
@@ -95,7 +96,8 @@ export function PlayScreen() {
     if (mode !== "listen") return;
     const id = window.setInterval(() => {
       const t = clockRef.current.now();
-      setProgressPct(Math.min(100, (t / endMsRef.current) * 100));
+      // Round so identical values let React skip the re-render (this fires ~10×/s).
+      setProgressPct(Math.round(Math.min(100, (t / endMsRef.current) * 100)));
       if (t >= endMsRef.current + 500) {
         clockRef.current.pause();
         setMode("done");
@@ -115,7 +117,7 @@ export function PlayScreen() {
       const t = rhythmPlayheadMs();
       rhythm.update(t);
       syncVerdicts(rhythm.getVerdicts());
-      setProgressPct(Math.min(100, Math.max(0, (t / endMsRef.current) * 100)));
+      setProgressPct(Math.round(Math.min(100, Math.max(0, (t / endMsRef.current) * 100))));
 
       if (t >= endMsRef.current + 600) finishRun(rhythm.getVerdicts());
     }, 60);
@@ -432,6 +434,7 @@ export function PlayScreen() {
               getTimeMs={getTimeMs}
               verdicts={verdictsRef.current}
               showKeyLabels={showKeyLabels}
+              debug={perfOverlay}
               onKeyPress={handleKeyPress}
               rendererRef={(r) => (rendererRef.current = r)}
             />

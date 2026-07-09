@@ -21,6 +21,8 @@ interface SettingsState {
   tuningCents: number;
   /** Whether the first-run mic calibration has been completed. */
   micCalibrated: boolean;
+  /** Show the on-canvas frame-time overlay (for tuning on real devices). */
+  perfOverlay: boolean;
 
   setView: (view: MusicView) => void;
   setPlayMode: (mode: PlayMode) => void;
@@ -30,6 +32,7 @@ interface SettingsState {
   setMicSensitivity: (v: number) => void;
   setTuningCents: (c: number) => void;
   setMicCalibrated: (v: boolean) => void;
+  setPerfOverlay: (v: boolean) => void;
 }
 
 /** Map a 0–1 sensitivity to concrete RMS attack/release thresholds. */
@@ -54,6 +57,7 @@ export const useSettings = create<SettingsState>()(
       micSensitivity: 0.5,
       tuningCents: 0,
       micCalibrated: false,
+      perfOverlay: false,
 
       setView: (view) => set({ view }),
       setPlayMode: (playMode) => set({ playMode }),
@@ -66,6 +70,7 @@ export const useSettings = create<SettingsState>()(
       setTuningCents: (tuningCents) =>
         set({ tuningCents: Math.max(-100, Math.min(100, tuningCents)) }),
       setMicCalibrated: (micCalibrated) => set({ micCalibrated }),
+      setPerfOverlay: (perfOverlay) => set({ perfOverlay }),
     }),
     { name: "piano-tutor.settings", version: 3 },
   ),

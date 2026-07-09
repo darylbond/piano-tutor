@@ -34,6 +34,14 @@ export interface MicConfig {
    * keypress registering as several. Still short enough for fast repeats.
    */
   refractoryMs: number;
+  /**
+   * Minimum gap between pitch analyses (ms). The McLeod pitch method over 2048
+   * samples is the heaviest thing on the main thread while playing along, and it
+   * competes with the note-rain renderer for frame budget on low-end tablets.
+   * Onsets only need ~30 Hz resolution — far finer than the refractory window —
+   * so we gate the analysis instead of running it on every animation frame.
+   */
+  analysisIntervalMs: number;
 }
 
 export const DEFAULT_MIC_CONFIG: MicConfig = {
@@ -44,6 +52,7 @@ export const DEFAULT_MIC_CONFIG: MicConfig = {
   maxMidi: 96,
   tuningCents: 0,
   refractoryMs: 140,
+  analysisIntervalMs: 33,
 };
 
 export interface MicLevel {
@@ -64,6 +73,7 @@ export class MicNoteInput extends BaseNoteInput {
   private raf = 0;
   private armed = true;
   private lastOnsetMs = -Infinity;
+  private lastAnalysisMs = 0;
   private running = false;
   private config: MicConfig;
   /** Optional live meter callback for the calibration/mic UI. */
@@ -111,6 +121,16 @@ export class MicNoteInput extends BaseNoteInput {
 
   private loop = () => {
     if (!this.running || !this.analyser || !this.ctx || !this.detector) return;
+
+    // Throttle the expensive analysis: skip frames that arrive sooner than the
+    // configured interval, but keep the rAF pump alive.
+    const frameNow = performance.now();
+    if (frameNow - this.lastAnalysisMs < this.config.analysisIntervalMs) {
+      this.raf = requestAnimationFrame(this.loop);
+      return;
+    }
+    this.lastAnalysisMs = frameNow;
+
     this.analyser.getFloatTimeDomainData(this.buffer);
 
     const rms = computeRms(this.buffer);

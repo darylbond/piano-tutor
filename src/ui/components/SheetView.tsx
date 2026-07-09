@@ -30,10 +30,19 @@ const COLOR = {
 export function SheetView({ notes, bpm, getTimeMs, verdicts, showLetters = true }: SheetViewProps) {
   const layerRef = useRef<SVGGElement>(null);
   const headRefs = useRef<Map<number, SVGGElement>>(new Map());
+  // Last color written per notehead, so we only touch the DOM when it changes
+  // (verdicts change a few times per second, not 60×).
+  const lastColor = useRef<Map<number, string>>(new Map());
   const getTimeRef = useRef(getTimeMs);
   getTimeRef.current = getTimeMs;
   const verdictsRef = useRef(verdicts);
   verdictsRef.current = verdicts;
+
+  // A new song remounts noteheads; drop the stale color cache so the first
+  // frame repaints them.
+  useEffect(() => {
+    lastColor.current.clear();
+  }, [notes]);
 
   const layout = useMemo(() => {
     return notes.map((n) => {
@@ -56,10 +65,14 @@ export function SheetView({ notes, bpm, getTimeMs, verdicts, showLetters = true 
       const nowBeat = msToBeats(getTimeRef.current(), bpm);
       const tx = CURSOR_X - nowBeat * PX_PER_BEAT;
       if (layerRef.current) {
-        layerRef.current.setAttribute("transform", `translate(${tx} 0)`);
+        // translate3d hints the compositor to scroll this layer rather than
+        // repaint the whole staff each frame.
+        layerRef.current.style.transform = `translate3d(${tx}px, 0, 0)`;
       }
-      // Recolor noteheads by verdict / whether they've passed the cursor.
+      // Recolor noteheads by verdict — but only write to the DOM when a color
+      // actually changes, so a steady frame does zero style work.
       const v = verdictsRef.current;
+      const cache = lastColor.current;
       for (const [id, el] of headRefs.current) {
         const verdict = v?.get(id);
         let color: string;
@@ -69,7 +82,10 @@ export function SheetView({ notes, bpm, getTimeMs, verdicts, showLetters = true 
           const hand = el.dataset.hand as "left" | "right";
           color = hand === "left" ? COLOR.left : COLOR.right;
         }
-        el.style.color = color;
+        if (cache.get(id) !== color) {
+          el.style.color = color;
+          cache.set(id, color);
+        }
       }
       raf = requestAnimationFrame(loop);
     };
@@ -97,7 +113,7 @@ export function SheetView({ notes, bpm, getTimeMs, verdicts, showLetters = true 
         </g>
 
         {/* Moving notes. */}
-        <g ref={layerRef}>
+        <g ref={layerRef} style={{ willChange: "transform" }}>
           {layout.map((l) => (
             <g
               key={l.note.id}
