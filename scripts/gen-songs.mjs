@@ -16,6 +16,7 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { parseAbc } from "./abc.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const OUT = join(__dirname, "..", "public", "library");
@@ -219,18 +220,21 @@ const SONGS = [
   },
   {
     id: "fur-elise",
-    title: "Für Elise (Theme)",
+    title: "Für Elise",
     composer: "Ludwig van Beethoven",
     level: 3,
-    bpm: 100,
-    beatsPerMeasure: 3,
+    bpm: 72,
     license: "PD",
-    attribution: "Beethoven, Bagatelle in A minor 'Für Elise' (1810). Public domain. Engraving © Piano Tutor, CC0.",
+    attribution: "Beethoven, Bagatelle in A minor 'Für Elise' (1810). Public domain. ABC transcription (F. Nordberg, public domain).",
     blurb: "One of the most famous tunes ever.",
-    right:
-      "E5:0.5 D#5:0.5 E5:0.5 D#5:0.5 E5:0.5 B4:0.5 | D5:0.5 C5:0.5 A4:1 | C4:0.5 E4:0.5 A4:0.5 B4:0.5 E4:0.5 G#4:0.5 |" +
-      "B4:0.5 C5:0.5 E4:1 | E5:0.5 D#5:0.5 E5:0.5 D#5:0.5 E5:0.5 B4:0.5 | D5:0.5 C5:0.5 A4:1 |" +
-      "C4:0.5 E4:0.5 A4:0.5 B4:0.5 E4:0.5 C5:0.5 | B4:0.5 A4:0.5 A4:1",
+    // Verified public-domain ABC (full A + B sections), not a hand transcription.
+    abc: `M:3/4
+L:1/8
+K:C
+e^d|:e^deB=dc|A2 z CE A|B2 z E^GB|c2 z Ee^d|e^deB=dc|A2 z CEA|B2 z EcB|
+[1 A4 e^d:|[2 A2 zBCd|:e3 Gfe|d3 Fed|c3 Edc|B2 z2 E2|e2 z2 e2|
+e'2 z ^de^d|e^deB=dc|A2 z CEA|B2 z E^GB|c2 z Ee^d|e^deB=dc|A2 z CEA|
+B2 z EcB|A2 zBcd|A6|`,
   },
   {
     id: "minuet-in-g",
@@ -429,14 +433,38 @@ async function main() {
   const attributions = ["# Music Attributions", "", "All bundled music is public domain or openly licensed.", ""];
 
   for (const song of SONGS) {
-    // Length scales with level: harder pieces play longer (repeats = verses /
-    // da capo). Per-song `reps` overrides the level default.
+    // A song is defined either by verified ABC notation (preferred — sourced
+    // from known-good public-domain transcriptions) or by the compact voice
+    // shorthand. Length scales with level via repeats.
     const reps = song.reps ?? REPS_FOR_LEVEL[song.level] ?? 1;
-    const voice = Array.from({ length: reps }, () => song.right).join(" | ");
-    const notes = parseVoice(voice, song.beatsPerMeasure, "right").map((n, i) => ({
-      id: i,
-      ...n,
-    }));
+    let notes;
+    let bpm = song.bpm;
+    let beatsPerMeasure = song.beatsPerMeasure;
+    if (song.abc) {
+      const parsed = parseAbc(song.abc);
+      bpm = song.bpm ?? parsed.bpm;
+      beatsPerMeasure = song.beatsPerMeasure ?? parsed.beatsPerMeasure;
+      const one = parsed.notes;
+      const barBeats = beatsPerMeasure;
+      const totalBars = Math.ceil(
+        (Math.max(...one.map((n) => n.startBeat + n.durBeats)) || 0) / barBeats,
+      );
+      notes = [];
+      for (let r = 0; r < reps; r++) {
+        const offset = r * totalBars * barBeats;
+        for (const n of one) {
+          notes.push({
+            ...n,
+            startBeat: round(n.startBeat + offset),
+            measure: Math.floor((n.startBeat + offset) / barBeats) + 1,
+          });
+        }
+      }
+      notes = notes.map((n, i) => ({ ...n, id: i }));
+    } else {
+      const voice = Array.from({ length: reps }, () => song.right).join(" | ");
+      notes = parseVoice(voice, beatsPerMeasure, "right").map((n, i) => ({ id: i, ...n }));
+    }
 
     const dir = join(OUT, song.id);
     await mkdir(dir, { recursive: true });
@@ -447,8 +475,8 @@ async function main() {
       title: song.title,
       composer: song.composer,
       level: song.level,
-      bpm: song.bpm,
-      beatsPerMeasure: song.beatsPerMeasure,
+      bpm,
+      beatsPerMeasure,
       hands: ["right"],
       license: song.license,
       attribution: song.attribution,

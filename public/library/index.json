@@ -155,16 +155,16 @@
   },
   {
     "id": "fur-elise",
-    "title": "Für Elise (Theme)",
+    "title": "Für Elise",
     "composer": "Ludwig van Beethoven",
     "level": 3,
-    "bpm": 100,
+    "bpm": 72,
     "beatsPerMeasure": 3,
     "hands": [
       "right"
     ],
     "license": "PD",
-    "attribution": "Beethoven, Bagatelle in A minor 'Für Elise' (1810). Public domain. Engraving © Piano Tutor, CC0.",
+    "attribution": "Beethoven, Bagatelle in A minor 'Für Elise' (1810). Public domain. ABC transcription (F. Nordberg, public domain).",
     "blurb": "One of the most famous tunes ever."
   },
   {
