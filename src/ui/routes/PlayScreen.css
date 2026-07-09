@@ -66,6 +66,30 @@
   margin: 0;
 }
 
+.play__view-toggle {
+  white-space: nowrap;
+  min-height: var(--touch-min);
+  padding: 0 var(--sp-3);
+  border: 2px solid var(--c-line);
+  border-radius: var(--r-pill);
+  background: var(--c-card);
+  color: var(--c-text);
+  font-weight: 700;
+  cursor: pointer;
+}
+.play__view-toggle:hover {
+  border-color: var(--c-primary);
+}
+
+.play__sheet {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  justify-content: center;
+}
+
 .play__midi {
   align-self: center;
   background: color-mix(in srgb, var(--c-green) 16%, var(--c-card));

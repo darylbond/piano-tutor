@@ -10,6 +10,8 @@ import { RhythmMatcher } from "@/engine/rhythm";
 import { scorePlaythrough, type PlayResult } from "@/engine/scorer";
 import { beatsToMs, msToBeats } from "@/engine/music";
 import { NoteRainView } from "@/ui/components/NoteRainView";
+import { SheetView } from "@/ui/components/SheetView";
+import { KeyboardView } from "@/ui/components/KeyboardView";
 import { BigButton } from "@/ui/components/BigButton";
 import { MicButton } from "@/ui/components/MicButton";
 import { ReportCard } from "@/ui/components/ReportCard";
@@ -36,6 +38,8 @@ export function PlayScreen() {
   const showKeyLabels = useSettings((s) => s.showKeyLabels);
   const tempoScale = useSettings((s) => s.tempoScale);
   const setTempoScale = useSettings((s) => s.setTempoScale);
+  const view = useSettings((s) => s.view);
+  const setView = useSettings((s) => s.setView);
 
   const clockRef = useRef(new TransportClock());
   const synthRef = useRef(new Synth());
@@ -110,7 +114,7 @@ export function PlayScreen() {
       }
 
       rhythm.update(t);
-      rendererRef.current?.setVerdicts(rhythm.getVerdicts());
+      syncVerdicts(rhythm.getVerdicts());
       setProgressPct(Math.min(100, Math.max(0, (t / endMsRef.current) * 100)));
 
       if (t >= endMsRef.current + 600) finishRun(rhythm.getVerdicts());
@@ -118,6 +122,11 @@ export function PlayScreen() {
     return () => window.clearInterval(id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mode, song]);
+
+  // Copy verdicts into the stable map both views read live (mutated in place).
+  function syncVerdicts(next: Map<number, NoteVerdict>) {
+    next.forEach((v, k) => verdictsRef.current.set(k, v));
+  }
 
   // The renderer calls this every frame; branch on the active mode.
   const getTimeMs = useCallback(() => {
@@ -207,7 +216,7 @@ export function PlayScreen() {
           { midi, timeMs: performance.now(), source: opts.source },
           clockRef.current.now(),
         );
-        rendererRef.current?.setVerdicts(rhythmRef.current.getVerdicts());
+        syncVerdicts(rhythmRef.current.getVerdicts());
         return;
       }
 
@@ -327,6 +336,13 @@ export function PlayScreen() {
           <span className="play__composer">{song.composer}</span>
         </div>
         <span className="play__level">{"⭐".repeat(song.level)}</span>
+        <button
+          className="play__view-toggle"
+          onClick={() => setView(view === "sheet" ? "rain" : "sheet")}
+          aria-label={`Switch to ${view === "sheet" ? "note rain" : "sheet music"} view`}
+        >
+          {view === "sheet" ? "🎹 Notes" : "🎼 Sheet"}
+        </button>
       </div>
 
       {midiDevice && (
@@ -350,17 +366,35 @@ export function PlayScreen() {
             <div className="play__progress-fill" style={{ width: `${progressPct}%` }} />
           </div>
 
-          <NoteRainView
-            notes={song.notes}
-            lowMidi={low}
-            highMidi={high}
-            bpm={song.bpm}
-            getTimeMs={getTimeMs}
-            verdicts={verdictsRef.current}
-            showKeyLabels={showKeyLabels}
-            onKeyPress={handleKeyPress}
-            rendererRef={(r) => (rendererRef.current = r)}
-          />
+          {view === "sheet" ? (
+            <div className="play__sheet">
+              <SheetView
+                notes={song.notes}
+                bpm={song.bpm}
+                getTimeMs={getTimeMs}
+                verdicts={verdictsRef.current}
+                showLetters={showKeyLabels}
+              />
+              <KeyboardView
+                lowMidi={low}
+                highMidi={high}
+                showLabels={showKeyLabels}
+                onPress={handleKeyPress}
+              />
+            </div>
+          ) : (
+            <NoteRainView
+              notes={song.notes}
+              lowMidi={low}
+              highMidi={high}
+              bpm={song.bpm}
+              getTimeMs={getTimeMs}
+              verdicts={verdictsRef.current}
+              showKeyLabels={showKeyLabels}
+              onKeyPress={handleKeyPress}
+              rendererRef={(r) => (rendererRef.current = r)}
+            />
+          )}
 
           <div className="play__bar">
             <div className="play__controls">

@@ -1,0 +1,57 @@
+.sheet {
+  width: 100%;
+  background: var(--c-card);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  padding: var(--sp-2);
+}
+
+.sheet__svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.sheet__staff line {
+  stroke: var(--c-line);
+  stroke-width: 1.5;
+}
+.sheet__clef {
+  font-size: 68px;
+  fill: var(--c-text);
+  dominant-baseline: middle;
+}
+
+.sheet__note {
+  color: var(--c-blue-deep); /* default; overridden per-frame by verdict */
+}
+.sheet__note ellipse {
+  fill: currentColor;
+  transition: fill var(--dur-fast) ease;
+}
+.sheet__ledger {
+  stroke: var(--c-line);
+  stroke-width: 1.5;
+}
+.sheet__sharp {
+  font-size: 20px;
+  fill: var(--c-text-soft);
+  text-anchor: middle;
+}
+.sheet__letter {
+  font-size: 8px;
+  font-weight: 700;
+  fill: #ffffff;
+  text-anchor: middle;
+  pointer-events: none;
+}
+
+.sheet__cursor {
+  stroke: var(--c-green);
+  stroke-width: 3;
+  opacity: 0.8;
+}
+.sheet__mask {
+  fill: var(--c-card);
+}
