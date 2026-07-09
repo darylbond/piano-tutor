@@ -1,0 +1,63 @@
+.practice {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+}
+.practice__heading {
+  text-align: center;
+}
+.practice__intro {
+  text-align: center;
+  color: var(--c-text-soft);
+  max-width: 48ch;
+  margin: 0 auto var(--sp-4);
+}
+
+.practice__grid {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--sp-4);
+}
+
+.practice__card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sp-1);
+  width: 100%;
+  text-align: left;
+  padding: var(--sp-5) var(--sp-4);
+  border: none;
+  border-radius: var(--r-lg);
+  background: var(--c-card);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition: transform var(--dur-med) var(--ease-bounce), box-shadow var(--dur-med) ease;
+}
+.practice__card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+.practice__emoji {
+  font-size: 2.5rem;
+}
+.practice__title {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: var(--fs-md);
+}
+.practice__blurb {
+  color: var(--c-text-soft);
+  font-size: var(--fs-sm);
+}
+.practice__go {
+  margin-top: var(--sp-3);
+  background: var(--c-orange);
+  color: white;
+  font-weight: 800;
+  padding: var(--sp-1) var(--sp-4);
+  border-radius: var(--r-pill);
+}

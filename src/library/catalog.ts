@@ -1,4 +1,5 @@
 import type { SongMeta, ScoreNote, Song } from "@/engine/types";
+import { isExerciseId, getExercise } from "@/lessons/exercises";
 
 /**
  * Loads the bundled song library from static JSON under public/library.
@@ -26,6 +27,14 @@ const songCache = new Map<string, Song>();
 export async function loadSong(id: string): Promise<Song> {
   const cached = songCache.get(id);
   if (cached) return cached;
+
+  // Exercises are generated in-memory, not fetched from the library.
+  if (isExerciseId(id)) {
+    const exercise = getExercise(id);
+    if (!exercise) throw new Error(`Unknown exercise: ${id}`);
+    songCache.set(id, exercise);
+    return exercise;
+  }
 
   const catalog = await loadCatalog();
   const meta = catalog.find((s) => s.id === id);

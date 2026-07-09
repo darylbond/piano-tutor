@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import type { Song, NoteVerdict } from "@/engine/types";
 import { loadSong, songLengthBeats } from "@/library/catalog";
+import { isExerciseId } from "@/lessons/exercises";
 import { TransportClock } from "@/engine/clock";
 import { Synth } from "@/engine/synth";
 import { WaitModeMatcher } from "@/engine/matcher";
@@ -246,11 +247,15 @@ export function PlayScreen() {
   const high = Math.max(...song.notes.map((n) => n.midi)) + 2;
   const playing = mode === "listen" || mode === "along";
   const showReport = mode === "done" && result;
+  const isExercise = isExerciseId(song.id);
+  const backTo = isExercise ? "/practice" : "/library";
 
   return (
     <div className="play">
       <div className="play__head">
-        <Link to="/library" className="play__back">← Songs</Link>
+        <Link to={backTo} className="play__back">
+          ← {isExercise ? "Practice" : "Songs"}
+        </Link>
         <div className="play__titles">
           <h2 className="play__title">{song.title}</h2>
           <span className="play__composer">{song.composer}</span>
@@ -270,7 +275,7 @@ export function PlayScreen() {
             result={result}
             isNewBest={isNewBest}
             onPlayAgain={startAlong}
-            onBackToLibrary={() => navigate("/library")}
+            onBackToLibrary={() => navigate(backTo)}
           />
         </div>
       ) : (
