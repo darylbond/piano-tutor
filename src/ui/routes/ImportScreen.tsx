@@ -171,15 +171,19 @@ export function ImportScreen() {
     <div className="import">
       <h2>Add a Song 🎼</h2>
       <p className="import__intro">
-        Import a <strong>MIDI (.mid)</strong> file from your computer. Tick the
-        part(s) you want, watch and hear a preview, then save. Your song stays on
-        this device.
+        Import a <strong>MIDI (.mid)</strong> file — from your computer, or one
+        you've downloaded on your phone or tablet. Tick the part(s) you want,
+        watch and hear a preview, then save. Your song stays on this device.
       </p>
 
+      {/* No `accept` filter: on phones/tablets a MIDI-type filter makes the OS
+          offer only the photo/media picker. Leaving it open lets the native
+          file browser reach Downloads/Files, where .mid files actually live.
+          We validate the file after it's chosen (onFile shows an error if it
+          isn't a readable MIDI). */}
       <input
         ref={fileRef}
         type="file"
-        accept=".mid,.midi,audio/midi"
         hidden
         onChange={(e) => {
           const f = e.target.files?.[0];
@@ -270,10 +274,13 @@ export function ImportScreen() {
       <details className="import__where">
         <summary>Where do I get MIDI files?</summary>
         <p>
-          Search for “<em>song name</em> MIDI” — there are large free collections
-          of public-domain classical and folk music. You can also export MIDI
-          from most music-notation apps. Only import files you have the right to
-          use.
+          Free sites like <strong>bitmidi.com</strong> or searching “<em>song
+          name</em> MIDI” turn up large collections of public-domain classical
+          and folk music. On a phone or tablet, download the <code>.mid</code>{" "}
+          file first, then use <strong>Choose a MIDI file</strong> above and pick
+          it from your <strong>Downloads / Files</strong>. You can also export
+          MIDI from most music-notation apps. Only import files you have the
+          right to use.
         </p>
       </details>
     </div>

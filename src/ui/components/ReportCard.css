@@ -6,6 +6,7 @@
   text-align: center;
   padding: var(--sp-6);
   background: var(--c-card);
+  border: 1px solid var(--c-card-border);
   border-radius: var(--r-lg);
   box-shadow: var(--shadow-lg);
 }
@@ -56,7 +57,7 @@
   font-family: var(--font-display);
   font-weight: 800;
   font-size: var(--fs-xl);
-  color: var(--c-primary-strong);
+  color: var(--c-accent-text);
 }
 .report__stat-label {
   color: var(--c-text-soft);

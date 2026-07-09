@@ -25,7 +25,9 @@
 }
 
 .sheet__note {
-  color: var(--c-blue-deep); /* default; overridden per-frame by verdict */
+  /* Brighter blue reads on both the light and dark staff card (and keeps the
+     white note-name label legible). Overridden per-frame by verdict color. */
+  color: var(--c-primary);
 }
 .sheet__note ellipse {
   fill: currentColor;

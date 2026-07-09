@@ -17,6 +17,7 @@
   --c-paper: #fbfcff; /* app background */
   --c-card: #ffffff;
   --c-line: #e6e9f5;
+  --c-card-border: var(--c-line); /* card outline — subtle on light, visible on dark */
   --c-shadow: rgba(31, 36, 64, 0.12);
 
   /* Semantic */
@@ -24,7 +25,8 @@
   --c-text: var(--c-ink);
   --c-text-soft: var(--c-ink-soft);
   --c-primary: var(--c-blue);
-  --c-primary-strong: var(--c-blue-deep);
+  --c-primary-strong: var(--c-blue-deep); /* darker blue — for white text on it */
+  --c-accent-text: var(--c-blue-deep); /* accent color for text/links ON a surface */
 
   /* Typography */
   --font-body: "Baloo 2", "Nunito", system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -71,10 +73,13 @@
 @media (prefers-color-scheme: dark) {
   :root {
     --c-ink: #eef1ff;
-    --c-ink-soft: #b3b9d8;
-    --c-paper: #171a2b;
-    --c-card: #21263d;
-    --c-line: #2f3552;
-    --c-shadow: rgba(0, 0, 0, 0.4);
+    --c-ink-soft: #c0c6e6; /* lighter so secondary text stays legible */
+    --c-paper: #121524; /* deep base */
+    --c-card: #2b3258; /* clearly lighter than paper so tiles read as raised */
+    --c-line: #3d456e; /* lighter for visible dividers/inputs */
+    --c-card-border: #495286; /* a distinct edge around cards on dark */
+    --c-shadow: rgba(0, 0, 0, 0.55);
+    /* Deep-blue accents flip to a light blue so text/links keep contrast. */
+    --c-accent-text: #a9c2ff;
   }
 }

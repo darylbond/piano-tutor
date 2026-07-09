@@ -27,6 +27,7 @@
   align-items: center;
   gap: var(--sp-4);
   background: var(--c-card);
+  border: 1px solid var(--c-card-border);
   border-radius: var(--r-lg);
   padding: var(--sp-5) var(--sp-6);
   box-shadow: var(--shadow-md);

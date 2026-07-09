@@ -112,7 +112,7 @@
   height: 100%;
   text-align: left;
   padding: var(--sp-4);
-  border: none;
+  border: 1px solid var(--c-card-border);
   border-radius: var(--r-lg);
   background: var(--c-card);
   box-shadow: var(--shadow-sm);
@@ -132,7 +132,7 @@
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: var(--c-primary-strong);
+  color: var(--c-accent-text);
   background: color-mix(in srgb, var(--c-primary) 12%, transparent);
   padding: 2px var(--sp-2);
   border-radius: var(--r-pill);

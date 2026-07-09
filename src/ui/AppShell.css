@@ -41,7 +41,7 @@
 
 .app-nav a:hover {
   background: var(--c-card);
-  color: var(--c-primary-strong);
+  color: var(--c-accent-text);
 }
 
 .app-settings {
