@@ -142,7 +142,7 @@ export function PlayScreen() {
       if (!song) return;
       // The on-screen keyboard makes its own sound; a real piano already did.
       if (opts.audioFeedback) synthRef.current.playNote(midi, 350);
-      rendererRef.current?.lightKey(midi, getTimeMs());
+      rendererRef.current?.lightKey(midi);
       if (modeRef.current !== "along" || !matcher) return;
 
       const advanced = matcher.handleEvent({
@@ -213,6 +213,7 @@ export function PlayScreen() {
   const low = Math.min(...song.notes.map((n) => n.midi)) - 2;
   const high = Math.max(...song.notes.map((n) => n.midi)) + 2;
   const playing = mode === "listen" || mode === "along";
+  const showReport = mode === "done" && result;
 
   return (
     <div className="play">
@@ -225,78 +226,71 @@ export function PlayScreen() {
         <span className="play__level">{"⭐".repeat(song.level)}</span>
       </div>
 
-      <div className="play__progress" aria-hidden="true">
-        <div className="play__progress-fill" style={{ width: `${progressPct}%` }} />
-      </div>
+      {showReport ? (
+        <div className="play__report-wrap">
+          <ReportCard
+            result={result}
+            isNewBest={isNewBest}
+            onPlayAgain={startAlong}
+            onBackToLibrary={() => navigate("/library")}
+          />
+        </div>
+      ) : (
+        <>
+          <div className="play__progress" aria-hidden="true">
+            <div className="play__progress-fill" style={{ width: `${progressPct}%` }} />
+          </div>
 
-      <NoteRainView
-        notes={song.notes}
-        lowMidi={low}
-        highMidi={high}
-        bpm={song.bpm}
-        getTimeMs={getTimeMs}
-        verdicts={verdictsRef.current}
-        showKeyLabels={showKeyLabels}
-        onKeyPress={handleKeyPress}
-        rendererRef={(r) => (rendererRef.current = r)}
-      />
+          <NoteRainView
+            notes={song.notes}
+            lowMidi={low}
+            highMidi={high}
+            bpm={song.bpm}
+            getTimeMs={getTimeMs}
+            verdicts={verdictsRef.current}
+            showKeyLabels={showKeyLabels}
+            onKeyPress={handleKeyPress}
+            rendererRef={(r) => (rendererRef.current = r)}
+          />
 
-      <div className="play__controls">
-        {!playing ? (
-          <>
-            <BigButton variant="primary" size="lg" icon="▶" onClick={startListen}>
-              {mode === "done" ? "Listen again" : "Listen"}
-            </BigButton>
-            <BigButton variant="secondary" size="lg" icon="🎹" onClick={startAlong}>
-              Play along
-            </BigButton>
-          </>
-        ) : (
-          <BigButton variant="ghost" size="lg" icon="⏹" onClick={stopAll}>
-            Stop
-          </BigButton>
-        )}
-      </div>
+          <div className="play__bar">
+            <div className="play__controls">
+              {!playing ? (
+                <>
+                  <BigButton variant="primary" icon="▶" onClick={startListen}>
+                    {mode === "done" ? "Listen again" : "Listen"}
+                  </BigButton>
+                  <BigButton variant="secondary" icon="🎹" onClick={startAlong}>
+                    Play along
+                  </BigButton>
+                </>
+              ) : (
+                <BigButton variant="ghost" icon="⏹" onClick={stopAll}>
+                  Stop
+                </BigButton>
+              )}
+            </div>
 
-      {mode === "along" && (
-        <MicButton
-          mic={micRef.current!}
-          active={micOn}
-          onToggle={setMicOn}
-        />
+            <label className="play__tempo">
+              <span>Speed {Math.round(tempoScale * 100)}%</span>
+              <input
+                type="range"
+                min={0.5}
+                max={1}
+                step={0.05}
+                value={tempoScale}
+                onChange={(e) => setTempoScale(Number(e.target.value))}
+                disabled={playing}
+                aria-label="Playback speed"
+              />
+            </label>
+          </div>
+
+          {mode === "along" && (
+            <MicButton mic={micRef.current!} active={micOn} onToggle={setMicOn} />
+          )}
+        </>
       )}
-
-      {mode === "done" && result && (
-        <ReportCard
-          result={result}
-          isNewBest={isNewBest}
-          onPlayAgain={startAlong}
-          onBackToLibrary={() => navigate("/library")}
-        />
-      )}
-      {mode === "done" && !result && (
-        <p className="play__cheer">🎉 That's the song! Try “Play along” to join in.</p>
-      )}
-
-      <div className="play__tempo">
-        <label htmlFor="tempo">Speed: {Math.round(tempoScale * 100)}%</label>
-        <input
-          id="tempo"
-          type="range"
-          min={0.5}
-          max={1}
-          step={0.05}
-          value={tempoScale}
-          onChange={(e) => setTempoScale(Number(e.target.value))}
-          disabled={playing}
-        />
-      </div>
-
-      <p className="play__hint">
-        {mode === "along"
-          ? "Tap the falling notes' keys on the keyboard (or play them on your piano). The cursor waits for you!"
-          : "▶ Listen watches the song play. 🎹 Play along waits for you to play each note."}
-      </p>
     </div>
   );
 }

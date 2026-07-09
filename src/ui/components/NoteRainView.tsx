@@ -57,7 +57,7 @@ export function NoteRainView({
       const rect = canvas.getBoundingClientRect();
       const midi = renderer.keyAt(ev.clientX - rect.left, ev.clientY - rect.top);
       if (midi != null) {
-        renderer.lightKey(midi, getTimeRef.current());
+        renderer.lightKey(midi);
         onKeyPressRef.current?.(midi);
       }
     };

@@ -28,6 +28,12 @@ export interface MicConfig {
   maxMidi: number;
   /** Global tuning offset in cents (acoustic pianos drift); from calibration. */
   tuningCents: number;
+  /**
+   * Minimum gap between onsets (ms). A held piano note's amplitude wobbles and
+   * can dip below release then rise again; this refractory window stops one
+   * keypress registering as several. Still short enough for fast repeats.
+   */
+  refractoryMs: number;
 }
 
 export const DEFAULT_MIC_CONFIG: MicConfig = {
@@ -37,6 +43,7 @@ export const DEFAULT_MIC_CONFIG: MicConfig = {
   minMidi: 36,
   maxMidi: 96,
   tuningCents: 0,
+  refractoryMs: 140,
 };
 
 export interface MicLevel {
@@ -53,6 +60,7 @@ export class MicNoteInput extends BaseNoteInput {
   private buffer: Float32Array<ArrayBuffer> = new Float32Array(2048);
   private raf = 0;
   private armed = true;
+  private lastOnsetMs = -Infinity;
   private running = false;
   private config: MicConfig;
   /** Optional live meter callback for the calibration/mic UI. */
@@ -114,16 +122,20 @@ export class MicNoteInput extends BaseNoteInput {
 
     this.onLevel?.({ rms, clarity, midi });
 
-    // Onset detection with hysteresis: fire on the rising edge, then wait for a
-    // dip below release before the next onset can fire.
-    if (this.armed && rms >= this.config.attackThreshold && midi != null) {
+    // Onset detection with hysteresis + a refractory window: fire on the rising
+    // edge, then require both a dip below release AND a minimum time gap before
+    // the next onset, so a single sustained note fires exactly once.
+    const now = performance.now();
+    const pastRefractory = now - this.lastOnsetMs >= this.config.refractoryMs;
+    if (this.armed && pastRefractory && rms >= this.config.attackThreshold && midi != null) {
       this.emit({
         midi,
         velocity: Math.min(1, rms * 8),
-        timeMs: performance.now(),
+        timeMs: now,
         source: "mic",
       });
       this.armed = false;
+      this.lastOnsetMs = now;
     } else if (rms < this.config.releaseThreshold) {
       this.armed = true;
     }

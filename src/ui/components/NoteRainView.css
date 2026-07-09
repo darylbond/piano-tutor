@@ -1,11 +1,14 @@
 .note-rain {
   width: 100%;
-  aspect-ratio: 16 / 10;
-  max-height: 70vh;
+  /* Fill the available height in the Play screen so nothing scrolls on a
+     tablet propped on a music stand; the canvas resizes to whatever it gets. */
+  flex: 1 1 auto;
+  min-height: 240px;
   border-radius: var(--r-lg);
   overflow: hidden;
   box-shadow: var(--shadow-md);
   background: #12162a;
+  touch-action: manipulation;
 }
 
 .note-rain__canvas {

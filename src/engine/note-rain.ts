@@ -56,8 +56,10 @@ export class NoteRainRenderer {
   private opts: Required<NoteRainOptions>;
   private notes: ScoreNote[] = [];
   private verdicts = new Map<number, NoteVerdict>();
-  /** midi -> ms timestamp until which the key should glow (from local input). */
+  /** midi -> wall-clock (performance.now) ms until which the key glows. */
   private litKeys = new Map<number, number>();
+  /** Keys currently sounding at the playhead (auto-lit during playback). */
+  private soundingKeys = new Set<number>();
   private width = 0;
   private height = 0;
   private dpr = 1;
@@ -85,9 +87,13 @@ export class NoteRainRenderer {
     this.verdicts = verdicts;
   }
 
-  /** Flash a key as pressed (from mic/MIDI/keyboard input) for ~180ms. */
-  lightKey(midi: number, nowMs: number, holdMs = 180) {
-    this.litKeys.set(midi, nowMs + holdMs);
+  /**
+   * Flash a key as pressed (from mic/MIDI/keyboard input). Uses wall-clock time
+   * so the glow always fades regardless of whether the song playhead is running
+   * — otherwise taps made before pressing play would stay lit forever.
+   */
+  lightKey(midi: number, holdMs = 200) {
+    this.litKeys.set(midi, performance.now() + holdMs);
   }
 
   setShowLabels(show: boolean) {
@@ -120,9 +126,22 @@ export class NoteRainRenderer {
     ctx.fillStyle = THEME.bg;
     ctx.fillRect(0, 0, width, height);
 
+    this.computeSounding(nowMs);
     this.drawFallingNotes(nowMs, hitLineY);
     this.drawHitLine(hitLineY);
-    this.drawKeyboard(nowMs, hitLineY, kbH);
+    this.drawKeyboard(hitLineY, kbH);
+  }
+
+  /** Which notes are sounding at the playhead — drives auto key highlighting. */
+  private computeSounding(nowMs: number) {
+    this.soundingKeys.clear();
+    const { bpm } = this.opts;
+    for (const note of this.notes) {
+      const startMs = beatsToMs(note.startBeat, bpm);
+      const endMs = startMs + beatsToMs(note.durBeats, bpm);
+      // Small lead so the key lights right as the note reaches the line.
+      if (nowMs >= startMs - 30 && nowMs <= endMs) this.soundingKeys.add(note.midi);
+    }
   }
 
   private drawFallingNotes(nowMs: number, hitLineY: number) {
@@ -182,7 +201,7 @@ export class NoteRainRenderer {
     ctx.globalAlpha = 1;
   }
 
-  private drawKeyboard(nowMs: number, top: number, kbH: number) {
+  private drawKeyboard(top: number, kbH: number) {
     const { ctx, width } = this;
     ctx.fillStyle = THEME.keyboardBg;
     ctx.fillRect(0, top, width, kbH);
@@ -190,22 +209,18 @@ export class NoteRainRenderer {
     const whites = this.kb.keys.filter((k) => k.white);
     const blacks = this.kb.keys.filter((k) => !k.white);
 
-    for (const k of whites) this.drawKey(k, nowMs, top, kbH, true);
-    for (const k of blacks) this.drawKey(k, nowMs, top, kbH, false);
+    for (const k of whites) this.drawKey(k, top, kbH, true);
+    for (const k of blacks) this.drawKey(k, top, kbH, false);
   }
 
-  private drawKey(
-    k: KeyLayout,
-    nowMs: number,
-    top: number,
-    kbH: number,
-    white: boolean,
-  ) {
+  private drawKey(k: KeyLayout, top: number, kbH: number, white: boolean) {
     const { ctx, width } = this;
     const x = k.x * width;
     const w = k.w * width;
     const h = white ? kbH : kbH * 0.62;
-    const lit = (this.litKeys.get(k.midi) ?? 0) > nowMs;
+    const lit =
+      (this.litKeys.get(k.midi) ?? 0) > performance.now() ||
+      this.soundingKeys.has(k.midi);
 
     ctx.fillStyle = lit
       ? THEME.hit
