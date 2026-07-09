@@ -43,6 +43,57 @@ export class Synth {
   }
 
   /**
+   * Schedule the whole metronome for a rhythm run on the AUDIO clock, so its
+   * tempo is rock-steady regardless of JS-timer / main-thread jitter — hitting
+   * keys can never make it speed up. Clicks land on every integer beat of the
+   * playhead in [fromMs, toMs]; `fromMs` is the playhead position (may be
+   * negative during a count-in) at the moment of the call.
+   */
+  scheduleMetronome(
+    bpm: number,
+    fromMs: number,
+    toMs: number,
+    beatsPerMeasure: number,
+    rate = 1,
+  ) {
+    const ctx = this.ensureContext();
+    const audioNow = ctx.currentTime;
+    const beatMsToPlayheadBeat = (ms: number) => (ms / 60000) * bpm;
+    const firstBeat = Math.ceil(beatMsToPlayheadBeat(fromMs) - 1e-6);
+    const lastBeat = Math.floor(beatMsToPlayheadBeat(toMs) + 1e-6);
+    for (let b = firstBeat; b <= lastBeat; b++) {
+      const beatMs = (b / bpm) * 60000;
+      const when = audioNow + (beatMs - fromMs) / 1000 / rate;
+      if (when < audioNow - 0.02) continue;
+      const accent = (((b % beatsPerMeasure) + beatsPerMeasure) % beatsPerMeasure) === 0;
+      this.clickAt(Math.max(audioNow, when), accent);
+    }
+  }
+
+  /** A short metronome tick scheduled at an absolute audio time. */
+  private clickAt(when: number, accent: boolean) {
+    const ctx = this.ctx!;
+    const gain = ctx.createGain();
+    gain.connect(this.master!);
+    const peak = accent ? 0.5 : 0.32;
+    const dur = 0.045;
+    gain.gain.setValueAtTime(0.0001, when);
+    gain.gain.exponentialRampToValueAtTime(peak, when + 0.002);
+    gain.gain.exponentialRampToValueAtTime(0.0001, when + dur);
+
+    const osc = ctx.createOscillator();
+    osc.type = "triangle";
+    osc.frequency.value = accent ? 1320 : 990;
+    osc.connect(gain);
+    osc.start(when);
+    osc.stop(when + dur + 0.02);
+    this.scheduled.push(osc);
+    osc.onended = () => {
+      this.scheduled = this.scheduled.filter((n) => n !== osc);
+    };
+  }
+
+  /**
    * Schedule an entire song starting `offsetMs` into the piece.
    * Returns the AudioContext time (seconds) at which the playhead's "0" sits,
    * so the visual clock can be aligned to the audio clock.

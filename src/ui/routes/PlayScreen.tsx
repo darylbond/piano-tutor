@@ -8,7 +8,7 @@ import { Synth } from "@/engine/synth";
 import { WaitModeMatcher } from "@/engine/matcher";
 import { RhythmMatcher } from "@/engine/rhythm";
 import { scorePlaythrough, type PlayResult } from "@/engine/scorer";
-import { beatsToMs, msToBeats } from "@/engine/music";
+import { beatsToMs } from "@/engine/music";
 import { NoteRainView } from "@/ui/components/NoteRainView";
 import { ScrubBar } from "@/ui/components/ScrubBar";
 import { SheetView } from "@/ui/components/SheetView";
@@ -46,7 +46,6 @@ export function PlayScreen() {
   const synthRef = useRef(new Synth());
   const matcherRef = useRef<WaitModeMatcher | null>(null);
   const rhythmRef = useRef<RhythmMatcher | null>(null);
-  const lastBeatRef = useRef<number>(-999);
   const lastModeRef = useRef<"along" | "rhythm">("along");
   const micRef = useRef<MicNoteInput | null>(null);
   const midiRef = useRef<MidiNoteInput | null>(null);
@@ -99,21 +98,15 @@ export function PlayScreen() {
     return () => window.clearInterval(id);
   }, [mode]);
 
-  // Rhythm mode: the clock runs; grade timing, click the metronome, mark misses.
+  // Rhythm mode: the clock runs; grade timing and mark misses. The metronome is
+  // NOT clicked here — it's pre-scheduled on the audio clock in startRhythm so
+  // its tempo can't be disturbed by this timer's jitter under load.
   useEffect(() => {
     if (mode !== "rhythm" || !song) return;
     const id = window.setInterval(() => {
       const rhythm = rhythmRef.current;
       if (!rhythm) return;
       const t = clockRef.current.now();
-
-      // Metronome: click once per beat (including the count-in's negative beats).
-      const beat = Math.floor(msToBeats(t, song.bpm));
-      if (beat !== lastBeatRef.current) {
-        lastBeatRef.current = beat;
-        synthRef.current.playNote(beat % song.beatsPerMeasure === 0 ? 84 : 79, 60);
-      }
-
       rhythm.update(t);
       syncVerdicts(rhythm.getVerdicts());
       setProgressPct(Math.min(100, Math.max(0, (t / endMsRef.current) * 100)));
@@ -186,11 +179,19 @@ export function PlayScreen() {
     verdictsRef.current = rhythm.getVerdicts();
     // One-bar count-in: start the clock before beat 0 so kids can find the beat.
     const countInMs = beatsToMs(song.beatsPerMeasure, song.bpm);
-    lastBeatRef.current = -999;
     const clock = clockRef.current;
     clock.setRate(tempoScale);
     clock.seek(-countInMs);
     clock.start();
+    // Pre-schedule the entire metronome on the audio clock (steady tempo,
+    // immune to key-hit jank), from the count-in through the end of the piece.
+    synthRef.current.scheduleMetronome(
+      song.bpm,
+      -countInMs,
+      endMsRef.current,
+      song.beatsPerMeasure,
+      tempoScale,
+    );
     lastModeRef.current = "rhythm";
     setProgressPct(0);
     setMode("rhythm");

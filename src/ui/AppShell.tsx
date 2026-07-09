@@ -4,9 +4,12 @@ import "./AppShell.css";
 export function AppShell() {
   const { pathname } = useLocation();
   const isHome = pathname === "/";
+  // The play screen must fit the visible viewport exactly (music-stand tablet
+  // use) — pin the shell to the dynamic viewport height so nothing scrolls off.
+  const isPlay = pathname.startsWith("/play");
 
   return (
-    <div className="app-shell">
+    <div className={`app-shell${isPlay ? " app-shell--fit" : ""}`}>
       <header className="app-header">
         <Link to="/" className="app-brand" aria-label="Piano Tutor home">
           <span className="app-brand__logo" aria-hidden="true">🎹</span>
