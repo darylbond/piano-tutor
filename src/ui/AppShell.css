@@ -1,0 +1,63 @@
+.app-header {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  padding: var(--sp-3) var(--sp-5);
+  max-width: var(--content-max);
+  margin: 0 auto;
+  width: 100%;
+}
+
+.app-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  text-decoration: none;
+  color: var(--c-text);
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: var(--fs-lg);
+}
+
+.app-brand__logo {
+  font-size: 1.6em;
+}
+
+.app-nav {
+  display: flex;
+  gap: var(--sp-2);
+  margin-left: auto;
+  flex-wrap: wrap;
+}
+
+.app-nav a {
+  text-decoration: none;
+  color: var(--c-text-soft);
+  font-weight: 700;
+  padding: var(--sp-2) var(--sp-3);
+  border-radius: var(--r-pill);
+  transition: background var(--dur-fast) ease, color var(--dur-fast) ease;
+}
+
+.app-nav a:hover {
+  background: var(--c-card);
+  color: var(--c-primary-strong);
+}
+
+.app-settings {
+  margin-left: auto;
+  font-size: 1.5rem;
+  text-decoration: none;
+  min-width: var(--touch-min);
+  min-height: var(--touch-min);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--r-pill);
+}
+.app-nav + .app-settings {
+  margin-left: 0;
+}
+.app-settings:hover {
+  background: var(--c-card);
+}

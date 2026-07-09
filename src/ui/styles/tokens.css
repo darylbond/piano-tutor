@@ -1,0 +1,80 @@
+/* Design tokens — the single source of truth for color, type, spacing, motion.
+   Calibrated for ~10-year-olds: high contrast, big type, friendly palette. */
+:root {
+  /* Brand palette */
+  --c-blue: #5b8def; /* right hand / primary */
+  --c-blue-deep: #3a6fd8;
+  --c-orange: #ff9f45; /* left hand */
+  --c-orange-deep: #f2820c;
+  --c-green: #46c98b; /* success / "got it" */
+  --c-amber: #ffcf5c; /* close / late */
+  --c-pink: #ff7eb6; /* mascot accents */
+  --c-purple: #9b7bff;
+
+  /* Neutrals */
+  --c-ink: #1f2440; /* text */
+  --c-ink-soft: #575d7a;
+  --c-paper: #fbfcff; /* app background */
+  --c-card: #ffffff;
+  --c-line: #e6e9f5;
+  --c-shadow: rgba(31, 36, 64, 0.12);
+
+  /* Semantic */
+  --c-bg: var(--c-paper);
+  --c-text: var(--c-ink);
+  --c-text-soft: var(--c-ink-soft);
+  --c-primary: var(--c-blue);
+  --c-primary-strong: var(--c-blue-deep);
+
+  /* Typography */
+  --font-body: "Baloo 2", "Nunito", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: "Baloo 2", "Nunito", system-ui, sans-serif;
+  --fs-xs: 0.85rem;
+  --fs-sm: 1rem;
+  --fs-md: 1.15rem;
+  --fs-lg: 1.5rem;
+  --fs-xl: 2.25rem;
+  --fs-xxl: 3.25rem;
+
+  /* Spacing scale */
+  --sp-1: 0.25rem;
+  --sp-2: 0.5rem;
+  --sp-3: 0.75rem;
+  --sp-4: 1rem;
+  --sp-5: 1.5rem;
+  --sp-6: 2rem;
+  --sp-8: 3rem;
+  --sp-10: 4rem;
+
+  /* Radius — everything rounded and soft */
+  --r-sm: 8px;
+  --r-md: 14px;
+  --r-lg: 24px;
+  --r-pill: 999px;
+
+  /* Elevation */
+  --shadow-sm: 0 2px 6px var(--c-shadow);
+  --shadow-md: 0 6px 18px var(--c-shadow);
+  --shadow-lg: 0 14px 40px var(--c-shadow);
+
+  /* Motion */
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --dur-fast: 120ms;
+  --dur-med: 240ms;
+  --dur-slow: 420ms;
+
+  /* Layout */
+  --touch-min: 48px; /* minimum tap target */
+  --content-max: 1100px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --c-ink: #eef1ff;
+    --c-ink-soft: #b3b9d8;
+    --c-paper: #171a2b;
+    --c-card: #21263d;
+    --c-line: #2f3552;
+    --c-shadow: rgba(0, 0, 0, 0.4);
+  }
+}
