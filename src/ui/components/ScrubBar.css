@@ -1,0 +1,50 @@
+.scrub {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+}
+.scrub__track {
+  position: relative;
+  height: 16px;
+  border-radius: var(--r-pill);
+  background: var(--c-line);
+  cursor: pointer;
+  touch-action: none;
+  outline-offset: 3px;
+}
+.scrub--disabled .scrub__track {
+  cursor: default;
+  opacity: 0.6;
+}
+.scrub__fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  border-radius: var(--r-pill);
+  background: var(--c-green);
+  pointer-events: none;
+}
+.scrub__thumb {
+  position: absolute;
+  top: 50%;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #fff;
+  border: 3px solid var(--c-green);
+  transform: translate(-50%, -50%);
+  box-shadow: var(--shadow-sm);
+  pointer-events: none;
+}
+.scrub--disabled .scrub__thumb {
+  display: none;
+}
+.scrub__time {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--fs-sm);
+  color: var(--c-text-soft);
+  font-variant-numeric: tabular-nums;
+}

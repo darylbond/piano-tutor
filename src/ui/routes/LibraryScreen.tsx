@@ -20,6 +20,7 @@ export function LibraryScreen() {
   const [error, setError] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const [level, setLevel] = useState<number | "all">("all");
+  const [onlyMine, setOnlyMine] = useState(false);
   const progress = useProgress((s) => s.songs);
 
   const [reloadKey, setReloadKey] = useState(0);
@@ -38,6 +39,7 @@ export function LibraryScreen() {
     if (!songs) return [];
     const q = query.trim().toLowerCase();
     return songs.filter((s) => {
+      if (onlyMine && !isUserSongId(s.id)) return false;
       if (level !== "all" && s.level !== level) return false;
       if (!q) return true;
       return (
@@ -45,12 +47,14 @@ export function LibraryScreen() {
         s.composer.toLowerCase().includes(q)
       );
     });
-  }, [songs, query, level]);
+  }, [songs, query, level, onlyMine]);
 
   const levels = useMemo(() => {
     const set = new Set(songs?.map((s) => s.level) ?? []);
     return [...set].sort((a, b) => a - b);
   }, [songs]);
+
+  const hasMine = useMemo(() => (songs ?? []).some((s) => isUserSongId(s.id)), [songs]);
 
   if (error) {
     return <p className="library__error">Couldn't load the songs. {error}</p>;
@@ -81,6 +85,15 @@ export function LibraryScreen() {
           >
             All
           </button>
+          {hasMine && (
+            <button
+              className={`chip ${onlyMine ? "chip--on" : ""}`}
+              onClick={() => setOnlyMine((v) => !v)}
+              title="Show only songs you added"
+            >
+              ★ Yours
+            </button>
+          )}
           {levels.map((lv) => (
             <button
               key={lv}

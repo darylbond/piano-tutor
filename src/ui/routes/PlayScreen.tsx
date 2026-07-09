@@ -10,6 +10,7 @@ import { RhythmMatcher } from "@/engine/rhythm";
 import { scorePlaythrough, type PlayResult } from "@/engine/scorer";
 import { beatsToMs, msToBeats } from "@/engine/music";
 import { NoteRainView } from "@/ui/components/NoteRainView";
+import { ScrubBar } from "@/ui/components/ScrubBar";
 import { SheetView } from "@/ui/components/SheetView";
 import { KeyboardView } from "@/ui/components/KeyboardView";
 import { BigButton } from "@/ui/components/BigButton";
@@ -191,6 +192,25 @@ export function PlayScreen() {
     setMode("rhythm");
   }
 
+  // Scrub the "Listen" playhead: reschedule audio from the new spot and move
+  // the clock there. Only meaningful for the fixed-timeline listen playback
+  // (play-along / rhythm are driven by the player, not a seekable clock).
+  function seekListen(fraction: number) {
+    if (!song) return;
+    const ms = Math.max(0, Math.min(1, fraction)) * endMsRef.current;
+    setResult(null);
+    matcherRef.current = null;
+    verdictsRef.current = new Map();
+    synthRef.current.setVolume(useSettings.getState().volume);
+    synthRef.current.playSong(song.notes, song.bpm, ms, tempoScale);
+    const clock = clockRef.current;
+    clock.setRate(tempoScale);
+    clock.seek(ms);
+    clock.start();
+    setProgressPct(Math.min(100, fraction * 100));
+    setMode("listen");
+  }
+
   function stopAll() {
     synthRef.current.stop();
     clockRef.current.pause();
@@ -362,9 +382,12 @@ export function PlayScreen() {
         </div>
       ) : (
         <>
-          <div className="play__progress" aria-hidden="true">
-            <div className="play__progress-fill" style={{ width: `${progressPct}%` }} />
-          </div>
+          <ScrubBar
+            progress={progressPct / 100}
+            totalMs={endMsRef.current}
+            onSeek={mode === "along" || mode === "rhythm" ? undefined : seekListen}
+            disabled={mode === "along" || mode === "rhythm"}
+          />
 
           {view === "sheet" ? (
             <div className="play__sheet">
