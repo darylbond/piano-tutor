@@ -28,4 +28,7 @@ All bundled music is public domain or openly licensed.
 - **Danny Boy** — Trad. Irish 'Londonderry Air'; 'Danny Boy' words F. Weatherly (1910). Public domain. ABC: John Chambers collection.
 - **Für Elise** — Beethoven, Bagatelle in A minor 'Für Elise' (1810). Public domain. ABC transcription (F. Nordberg, public domain).
 - **Greensleeves** — Traditional English (c. 1580). Public domain. ABC from The Session (CC0).
+- **Molly Malone** — Trad. Irish ('Cockles and Mussels'). Public domain. ABC from O'Neill's Music of Ireland (1903) via V. Brennan.
 - **Ode to Joy** — Beethoven, 'Ode to Joy' (Symphony No. 9, 1824). Public domain. ABC from the John Chambers collection.
+- **Scarborough Fair** — Trad. English ballad. Public domain. ABC transcr. Frank Nordberg (musicaviva.com).
+- **We Wish You a Merry Christmas** — Trad. English carol (West Country). Public domain. ABC via folkinfo.org.
