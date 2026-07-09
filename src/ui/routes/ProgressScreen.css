@@ -1,0 +1,125 @@
+.progress {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-5);
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.progress__heading {
+  text-align: center;
+}
+
+.progress__total {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: linear-gradient(150deg, var(--c-amber), var(--c-orange));
+  color: white;
+  padding: var(--sp-5) var(--sp-8);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-md);
+}
+.progress__total-num {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: var(--fs-xxl);
+  line-height: 1;
+}
+.progress__total-label {
+  font-weight: 700;
+}
+
+.progress__empty {
+  text-align: center;
+  color: var(--c-text-soft);
+}
+.progress__cta,
+.progress__note a {
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.progress__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+.progress__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  background: var(--c-card);
+  border-radius: var(--r-md);
+  padding: var(--sp-3) var(--sp-4);
+  box-shadow: var(--shadow-sm);
+}
+.progress__song {
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  color: var(--c-text);
+}
+.progress__song-title {
+  font-weight: 800;
+}
+.progress__song-meta {
+  font-size: var(--fs-sm);
+  color: var(--c-text-soft);
+}
+.progress__stars {
+  font-size: var(--fs-lg);
+  white-space: nowrap;
+}
+.progress__stars .on {
+  color: var(--c-amber);
+}
+.progress__stars .off {
+  color: var(--c-line);
+}
+
+.progress__parent {
+  width: 100%;
+  background: var(--c-card);
+  border-radius: var(--r-md);
+  padding: var(--sp-3) var(--sp-4);
+  box-shadow: var(--shadow-sm);
+}
+.progress__parent summary {
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--c-text-soft);
+}
+.progress__note {
+  font-size: var(--fs-sm);
+  color: var(--c-text-soft);
+}
+.progress__parent-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
+.progress__btn {
+  min-height: var(--touch-min);
+  padding: 0 var(--sp-4);
+  border: 2px solid var(--c-line);
+  border-radius: var(--r-pill);
+  background: var(--c-paper);
+  color: var(--c-text);
+  font-weight: 700;
+  cursor: pointer;
+}
+.progress__btn--danger {
+  border-color: var(--c-orange);
+  color: var(--c-orange-deep);
+}
+.progress__import-msg {
+  font-weight: 700;
+  color: var(--c-green);
+}
