@@ -146,12 +146,16 @@ export function PlayScreen() {
     matcherRef.current = null;
     verdictsRef.current = new Map();
     const clock = clockRef.current;
+    // Resume from where the playhead was scrubbed to; restart from 0 if it's at
+    // (or past) the end.
+    let startMs = clock.now();
+    if (startMs >= endMsRef.current - 20) startMs = 0;
     synthRef.current.setVolume(useSettings.getState().volume);
-    synthRef.current.playSong(song.notes, song.bpm, 0, tempoScale);
+    synthRef.current.playSong(song.notes, song.bpm, startMs, tempoScale);
     clock.setRate(tempoScale);
-    clock.seek(0);
+    clock.seek(startMs);
     clock.start();
-    setProgressPct(0);
+    setProgressPct(Math.min(100, (startMs / endMsRef.current) * 100));
     setMode("listen");
   }
 
@@ -192,23 +196,24 @@ export function PlayScreen() {
     setMode("rhythm");
   }
 
-  // Scrub the "Listen" playhead: reschedule audio from the new spot and move
-  // the clock there. Only meaningful for the fixed-timeline listen playback
-  // (play-along / rhythm are driven by the player, not a seekable clock).
+  // Scrub the playhead. If Listen is already playing, reschedule audio from the
+  // new spot and keep going; otherwise just move the (paused) playhead so the
+  // notes jump there — pressing Listen later starts from this position. We never
+  // start playback on release unless the user already hit play.
   function seekListen(fraction: number) {
     if (!song) return;
     const ms = Math.max(0, Math.min(1, fraction)) * endMsRef.current;
-    setResult(null);
-    matcherRef.current = null;
-    verdictsRef.current = new Map();
-    synthRef.current.setVolume(useSettings.getState().volume);
-    synthRef.current.playSong(song.notes, song.bpm, ms, tempoScale);
     const clock = clockRef.current;
     clock.setRate(tempoScale);
     clock.seek(ms);
-    clock.start();
     setProgressPct(Math.min(100, fraction * 100));
-    setMode("listen");
+    if (modeRef.current === "listen") {
+      synthRef.current.setVolume(useSettings.getState().volume);
+      synthRef.current.playSong(song.notes, song.bpm, ms, tempoScale);
+      clock.start();
+    } else {
+      synthRef.current.stop(); // stay silent while only repositioning
+    }
   }
 
   function stopAll() {

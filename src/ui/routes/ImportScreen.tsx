@@ -26,6 +26,9 @@ export function ImportScreen() {
   const previewZero = useRef(0);
   const previewingRef = useRef(false);
   const previewTimer = useRef<number | undefined>(undefined);
+  // Where the (paused) playhead sits when not previewing, so scrubbing can
+  // reposition without starting audio and Play resumes from that spot.
+  const pausedOffset = useRef(0);
 
   useEffect(() => {
     const synth = synthRef.current;
@@ -37,45 +40,56 @@ export function ImportScreen() {
 
   const song = parsed?.song;
 
-  function stopPreview() {
-    synthRef.current.stop();
-    window.clearTimeout(previewTimer.current);
-    previewingRef.current = false;
-    setPreviewing(false);
-    setPreviewPct(0);
-  }
-
   function songTotalMs(s: Song): number {
     const lastBeat = s.notes.reduce((m, n) => Math.max(m, n.startBeat + n.durBeats), 0);
     return (lastBeat / s.bpm) * 60_000;
   }
 
+  function stopPreview() {
+    // Freeze the playhead where we stopped so the bar and Note Rain stay put.
+    if (previewingRef.current) pausedOffset.current = Math.max(0, getTimeMs());
+    synthRef.current.stop();
+    window.clearTimeout(previewTimer.current);
+    previewingRef.current = false;
+    setPreviewing(false);
+    if (song) setPreviewPct(Math.min(1, pausedOffset.current / (songTotalMs(song) || 1)));
+  }
+
   /** Start (or restart) preview playback from `offsetMs` into the piece. */
   function playPreviewFrom(s: Song, offsetMs = 0) {
+    let start = Math.max(0, offsetMs);
+    if (start >= songTotalMs(s) - 20) start = 0; // at the end → restart
     synthRef.current.stop();
     window.clearTimeout(previewTimer.current);
     synthRef.current.setVolume(useSettings.getState().volume);
     // playSong returns the audio-clock time (s) where the playhead's 0 sits.
-    previewZero.current = synthRef.current.playSong(s.notes, s.bpm, offsetMs, 1);
+    previewZero.current = synthRef.current.playSong(s.notes, s.bpm, start, 1);
+    pausedOffset.current = start;
     previewingRef.current = true;
     setPreviewing(true);
-    const remainMs = songTotalMs(s) - offsetMs + 600;
+    const remainMs = songTotalMs(s) - start + 600;
     previewTimer.current = window.setTimeout(stopPreview, Math.max(200, remainMs));
   }
 
   function playPreview(s: Song) {
-    playPreviewFrom(s, 0);
+    playPreviewFrom(s, pausedOffset.current);
   }
 
   function seekPreview(fraction: number) {
     if (!song) return;
-    playPreviewFrom(song, Math.max(0, Math.min(1, fraction)) * songTotalMs(song));
+    const ms = Math.max(0, Math.min(1, fraction)) * songTotalMs(song);
     setPreviewPct(fraction);
+    if (previewingRef.current) {
+      playPreviewFrom(song, ms); // seeking while playing → keep playing
+    } else {
+      pausedOffset.current = ms; // just reposition; don't start audio
+    }
   }
 
-  // Note Rain reads the live audio playhead while previewing, else sits at t=0.
+  // Note Rain reads the live audio playhead while previewing, else the paused
+  // (scrubbed) position.
   function getTimeMs() {
-    if (!previewingRef.current) return 0;
+    if (!previewingRef.current) return pausedOffset.current;
     return (synthRef.current.now() - previewZero.current) * 1000;
   }
 
@@ -93,6 +107,8 @@ export function ImportScreen() {
   async function onFile(file: File) {
     setError(null);
     stopPreview();
+    pausedOffset.current = 0; // fresh file → playhead at the start
+    setPreviewPct(0);
     const name = file.name.replace(/\.midi?$/i, "");
     try {
       const buffer = await file.arrayBuffer();
