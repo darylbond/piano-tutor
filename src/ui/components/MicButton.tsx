@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { MicNoteInput, type MicLevel } from "@/audio/mic";
 import { midiToName } from "@/engine/music";
+import { useSettings, sensitivityToThresholds } from "@/store/settings";
 import "./MicButton.css";
 
 interface MicButtonProps {
@@ -19,6 +20,13 @@ export function MicButton({ mic, active, onToggle }: MicButtonProps) {
   const [level, setLevel] = useState<MicLevel>({ rms: 0, clarity: 0, midi: null });
   const [error, setError] = useState<string | null>(null);
   const barRef = useRef<HTMLDivElement>(null);
+  const micSensitivity = useSettings((s) => s.micSensitivity);
+  const setMicSensitivity = useSettings((s) => s.setMicSensitivity);
+
+  // Apply sensitivity to the (possibly running) mic whenever it changes.
+  useEffect(() => {
+    mic.setConfig(sensitivityToThresholds(micSensitivity));
+  }, [mic, micSensitivity]);
 
   useEffect(() => {
     if (!active) return;
@@ -71,6 +79,21 @@ export function MicButton({ mic, active, onToggle }: MicButtonProps) {
         <span className="mic__hint">
           {level.midi != null ? `I hear: ${midiToName(level.midi)}` : "Play a note!"}
         </span>
+      )}
+      {active && (
+        <label className="mic__sens">
+          <span aria-hidden="true">🔈</span>
+          <input
+            type="range"
+            min={0}
+            max={1}
+            step={0.05}
+            value={micSensitivity}
+            onChange={(e) => setMicSensitivity(Number(e.target.value))}
+            aria-label="Microphone sensitivity"
+          />
+          <span aria-hidden="true">🔊</span>
+        </label>
       )}
       {error && <span className="mic__error">{error}</span>}
     </div>

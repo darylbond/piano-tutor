@@ -44,6 +44,17 @@
   color: var(--c-text-soft);
   font-size: var(--fs-sm);
 }
+.mic__sens {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  color: var(--c-text-soft);
+  font-size: var(--fs-sm);
+}
+.mic__sens input {
+  width: min(200px, 50vw);
+}
+
 .mic__error {
   color: var(--c-orange-deep);
   font-size: var(--fs-sm);

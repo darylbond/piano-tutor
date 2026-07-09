@@ -15,12 +15,26 @@ interface SettingsState {
   showKeyLabels: boolean;
   /** Master volume for built-in playback, 0–1. */
   volume: number;
+  /** Mic onset sensitivity 0–1 (higher = triggers on quieter notes). */
+  micSensitivity: number;
 
   setView: (view: MusicView) => void;
   setPlayMode: (mode: PlayMode) => void;
   setTempoScale: (scale: number) => void;
   toggleKeyLabels: () => void;
   setVolume: (v: number) => void;
+  setMicSensitivity: (v: number) => void;
+}
+
+/** Map a 0–1 sensitivity to concrete RMS attack/release thresholds. */
+export function sensitivityToThresholds(sensitivity: number): {
+  attackThreshold: number;
+  releaseThreshold: number;
+} {
+  const s = Math.min(1, Math.max(0, sensitivity));
+  // High sensitivity -> low threshold (fires on quiet notes).
+  const attackThreshold = 0.004 + (1 - s) * 0.05;
+  return { attackThreshold, releaseThreshold: attackThreshold * 0.6 };
 }
 
 export const useSettings = create<SettingsState>()(
@@ -31,6 +45,7 @@ export const useSettings = create<SettingsState>()(
       tempoScale: 1,
       showKeyLabels: true,
       volume: 0.8,
+      micSensitivity: 0.5,
 
       setView: (view) => set({ view }),
       setPlayMode: (playMode) => set({ playMode }),
@@ -38,7 +53,9 @@ export const useSettings = create<SettingsState>()(
         set({ tempoScale: Math.min(1, Math.max(0.5, tempoScale)) }),
       toggleKeyLabels: () => set((s) => ({ showKeyLabels: !s.showKeyLabels })),
       setVolume: (volume) => set({ volume: Math.min(1, Math.max(0, volume)) }),
+      setMicSensitivity: (micSensitivity) =>
+        set({ micSensitivity: Math.min(1, Math.max(0, micSensitivity)) }),
     }),
-    { name: "piano-tutor.settings", version: 1 },
+    { name: "piano-tutor.settings", version: 2 },
   ),
 );
