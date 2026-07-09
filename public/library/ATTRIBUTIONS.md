@@ -2,7 +2,7 @@
 
 All bundled music is public domain or openly licensed.
 
-- **Ode to Joy** — Beethoven, 'Ode to Joy' (Symphony No. 9). Public domain. Engraving © Piano Tutor, CC0.
+- **Ode to Joy** — Beethoven, 'Ode to Joy' (Symphony No. 9, 1824). Public domain. ABC from the John Chambers collection.
 - **Twinkle, Twinkle, Little Star** — Traditional melody. Public domain. Engraving © Piano Tutor, CC0.
 - **Mary Had a Little Lamb** — Traditional melody. Public domain. Engraving © Piano Tutor, CC0.
 - **Hot Cross Buns** — Traditional melody. Public domain. Engraving © Piano Tutor, CC0.

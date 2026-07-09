@@ -68,13 +68,17 @@ const SONGS = [
     composer: "Ludwig van Beethoven",
     level: 1,
     bpm: 100,
-    beatsPerMeasure: 4,
     license: "PD",
-    attribution: "Beethoven, 'Ode to Joy' (Symphony No. 9). Public domain. Engraving © Piano Tutor, CC0.",
+    attribution: "Beethoven, 'Ode to Joy' (Symphony No. 9, 1824). Public domain. ABC from the John Chambers collection.",
     blurb: "The happy tune everyone knows!",
-    right:
-      "E4:1 E4:1 F4:1 G4:1 | G4:1 F4:1 E4:1 D4:1 | C4:1 C4:1 D4:1 E4:1 | E4:1.5 D4:0.5 D4:2 |" +
-      "E4:1 E4:1 F4:1 G4:1 | G4:1 F4:1 E4:1 D4:1 | C4:1 C4:1 D4:1 E4:1 | D4:1.5 C4:0.5 C4:2",
+    // Verified public-domain ABC (full theme incl. the bridge), key of G.
+    abc: `M:4/4
+L:1/4
+K:G
+B B c d|d c B A|G G A B|B>A A2|
+B B c d|d c B A|G G A B|A>G G2|
+A A B G|A B/c/ B G|A B/c/ B A|G A D2|
+B B c d|d c B A|G G A B|A>G G2|`,
   },
   {
     id: "twinkle-twinkle",
