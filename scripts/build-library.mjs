@@ -16,8 +16,12 @@
  *
  * Run: node scripts/build-library.mjs
  */
-import { Midi } from "@tonejs/midi";
+// @tonejs/midi ships CommonJS; under Node ESM only the default export resolves
+// (Vite/TS interop handles the named form in the browser build).
+import midiPkg from "@tonejs/midi";
 import { readdir, readFile, mkdir, writeFile } from "node:fs/promises";
+
+const { Midi } = midiPkg;
 import { existsSync } from "node:fs";
 import { dirname, join, basename } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -59,8 +63,14 @@ function convert(buffer, meta) {
   const chosen = meta.trackIndex ?? pickMelodyTrack(midi);
   const track = midi.tracks[chosen];
 
+  // Optional pitch window (sidecar `minPitch`/`maxPitch`): drop bass/percussion
+  // so the skyline follows the melody register on dense solo-piano tracks.
+  const minPitch = meta.minPitch ?? 0;
+  const maxPitch = meta.maxPitch ?? 127;
+
   const byStart = new Map();
   for (const n of track?.notes ?? []) {
+    if (n.midi < minPitch || n.midi > maxPitch) continue;
     const cur = byStart.get(n.ticks);
     if (!cur || n.midi > cur.midi) byStart.set(n.ticks, n);
   }

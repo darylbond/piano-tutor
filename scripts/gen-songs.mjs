@@ -13,13 +13,15 @@
  *
  * Run: node scripts/gen-songs.mjs
  */
-import { mkdir, writeFile } from "node:fs/promises";
-import { dirname, join } from "node:path";
+import { mkdir, writeFile, readdir, readFile } from "node:fs/promises";
+import { existsSync } from "node:fs";
+import { dirname, join, basename } from "node:path";
 import { fileURLToPath } from "node:url";
 import { parseAbc } from "./abc.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const OUT = join(__dirname, "..", "public", "library");
+const ABC_DIR = join(__dirname, "..", "content", "abc");
 
 const LETTER = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
 
@@ -61,25 +63,49 @@ function parseVoice(text, beatsPerMeasure, hand) {
 
 const round = (n) => Math.round(n * 1000) / 1000;
 
+function slug(title) {
+  return (
+    title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 48) ||
+    "song"
+  );
+}
+
+/**
+ * Load every `content/abc/*.abc` file as a song descriptor (same shape as an
+ * inline SONGS entry, but sourced from a portable, verified ABC file). Metadata
+ * comes from the ABC headers (T:/C:) and %% directives — see content/abc/README.
+ */
+async function loadAbcSongs() {
+  if (!existsSync(ABC_DIR)) return [];
+  const files = (await readdir(ABC_DIR)).filter((f) => /\.abc$/i.test(f));
+  const songs = [];
+  for (const file of files) {
+    const abc = await readFile(join(ABC_DIR, file), "utf8");
+    const parsed = parseAbc(abc);
+    const d = parsed.directives;
+    const title = parsed.title || basename(file, ".abc");
+    songs.push({
+      id: d.id || slug(basename(file, ".abc")) || slug(title),
+      title,
+      composer: parsed.composer || d.composer || "Traditional",
+      level: d.level ? Number(d.level) : 3,
+      bpm: d.bpm ? Number(d.bpm) : undefined,
+      beatsPerMeasure: d.meter ? Number(d.meter) : undefined,
+      reps: d.reps ? Number(d.reps) : undefined,
+      license: d.license || "PD",
+      attribution: d.attribution || `${title}. Public domain.`,
+      blurb: d.blurb || "",
+      abc,
+    });
+  }
+  return songs;
+}
+
+// NOTE: songs are being migrated to verified ABC files under content/abc/,
+// which override any inline entry with the same id. Für Elise, Greensleeves,
+// and Ode to Joy now live there. Remaining inline songs use the compact
+// shorthand until sourced from a known-good ABC/MIDI.
 const SONGS = [
-  {
-    id: "ode-to-joy",
-    title: "Ode to Joy",
-    composer: "Ludwig van Beethoven",
-    level: 1,
-    bpm: 100,
-    license: "PD",
-    attribution: "Beethoven, 'Ode to Joy' (Symphony No. 9, 1824). Public domain. ABC from the John Chambers collection.",
-    blurb: "The happy tune everyone knows!",
-    // Verified public-domain ABC (full theme incl. the bridge), key of G.
-    abc: `M:4/4
-L:1/4
-K:G
-B B c d|d c B A|G G A B|B>A A2|
-B B c d|d c B A|G G A B|A>G G2|
-A A B G|A B/c/ B G|A B/c/ B A|G A D2|
-B B c d|d c B A|G G A B|A>G G2|`,
-  },
   {
     id: "twinkle-twinkle",
     title: "Twinkle, Twinkle, Little Star",
@@ -223,24 +249,6 @@ B B c d|d c B A|G G A B|A>G G2|`,
       "G4:0.5 G4:0.5 G5:1 E5:1 | C5:1 B4:1 A4:1 | F5:0.5 F5:0.5 E5:1 C5:1 | D5:1 C5:2",
   },
   {
-    id: "fur-elise",
-    title: "Für Elise",
-    composer: "Ludwig van Beethoven",
-    level: 3,
-    bpm: 72,
-    license: "PD",
-    attribution: "Beethoven, Bagatelle in A minor 'Für Elise' (1810). Public domain. ABC transcription (F. Nordberg, public domain).",
-    blurb: "One of the most famous tunes ever.",
-    // Verified public-domain ABC (full A + B sections), not a hand transcription.
-    abc: `M:3/4
-L:1/8
-K:C
-e^d|:e^deB=dc|A2 z CE A|B2 z E^GB|c2 z Ee^d|e^deB=dc|A2 z CEA|B2 z EcB|
-[1 A4 e^d:|[2 A2 zBCd|:e3 Gfe|d3 Fed|c3 Edc|B2 z2 E2|e2 z2 e2|
-e'2 z ^de^d|e^deB=dc|A2 z CEA|B2 z E^GB|c2 z Ee^d|e^deB=dc|A2 z CEA|
-B2 z EcB|A2 zBcd|A6|`,
-  },
-  {
     id: "minuet-in-g",
     title: "Minuet in G",
     composer: "Christian Petzold",
@@ -371,25 +379,6 @@ B2 z EcB|A2 zBcd|A6|`,
       "D5:1 A4:1 B4:1 G4:1 | A4:1 F#4:1 G4:1 E4:1 | F#4:1 D4:1 E4:1 F#4:1 | G4:1 A4:1 B4:1 A4:1",
   },
   {
-    id: "greensleeves",
-    title: "Greensleeves",
-    composer: "Traditional",
-    level: 4,
-    bpm: 96,
-    reps: 2,
-    license: "PD",
-    attribution: "Traditional English (c. 1580). Public domain. ABC from The Session (CC0).",
-    blurb: "A haunting Tudor melody.",
-    // Verified public-domain ABC (A dorian), full verse + chorus.
-    abc: `M:6/8
-L:1/8
-K:Ador
-AB|c2c c>de|dBG G>AB|c2A A>Bc|B2^G E2B|
-c2c c>de|dBG G>AB|c>BA B^G2|A3 z:|
-ef|g2g g>fe|d>BG G2g|a2b c'ba|g>ee e2f|
-g2g g>fe|d>BG GAB|c>BA B^G2|A3 z|`,
-  },
-  {
     id: "habanera",
     title: "Habanera (from Carmen)",
     composer: "Georges Bizet",
@@ -430,7 +419,15 @@ async function main() {
   const index = [];
   const attributions = ["# Music Attributions", "", "All bundled music is public domain or openly licensed.", ""];
 
-  for (const song of SONGS) {
+  // Merge inline songs with content/abc/*.abc files. A file whose id matches an
+  // inline song replaces it, so the library migrates to verified sources one
+  // dropped file at a time.
+  const abcSongs = await loadAbcSongs();
+  const byId = new Map(SONGS.map((s) => [s.id, s]));
+  for (const s of abcSongs) byId.set(s.id, s);
+  const allSongs = [...byId.values()];
+
+  for (const song of allSongs) {
     // A song is defined either by verified ABC notation (preferred — sourced
     // from known-good public-domain transcriptions) or by the compact voice
     // shorthand. Length scales with level via repeats.
@@ -488,7 +485,9 @@ async function main() {
   await writeFile(join(OUT, "index.json"), JSON.stringify(index, null, 2) + "\n");
   await writeFile(join(OUT, "ATTRIBUTIONS.md"), attributions.join("\n") + "\n");
 
-  console.log(`Generated ${SONGS.length} songs → ${OUT}`);
+  console.log(
+    `Generated ${allSongs.length} songs → ${OUT} (${abcSongs.length} from content/abc/)`,
+  );
 }
 
 main().catch((err) => {

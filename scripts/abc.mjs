@@ -45,22 +45,86 @@ function keyAccidentalMap(key) {
   return map;
 }
 
-/** Parse an ABC tune string into { notes, bpm, beatsPerMeasure }. */
+/**
+ * Extract the MIDI pitches inside an ABC chord like "[CEG]" (the text between
+ * the brackets). Octave/accidental rules match single notes; per-note length
+ * digits are ignored (the chord's length is read after the closing bracket).
+ * Updates `measureAcc` so an accidental inside a chord persists in the bar.
+ */
+function chordPitches(inner, measureAcc, keyMap) {
+  const res = [];
+  let j = 0;
+  while (j < inner.length) {
+    let alter = null;
+    while (inner[j] === "^" || inner[j] === "_" || inner[j] === "=") {
+      if (inner[j] === "^") alter = (alter ?? 0) + 1;
+      else if (inner[j] === "_") alter = (alter ?? 0) - 1;
+      else alter = 0;
+      j++;
+    }
+    const letter = inner[j];
+    if (!letter || !/[A-Ga-g]/.test(letter)) { j++; continue; }
+    let octave = letter <= "Z" ? 4 : 5;
+    j++;
+    while (inner[j] === "'" || inner[j] === ",") {
+      if (inner[j] === "'") octave += 1;
+      else octave -= 1;
+      j++;
+    }
+    const upper = letter.toUpperCase();
+    const octKey = upper + octave;
+    if (alter != null) measureAcc[octKey] = alter;
+    const eff = measureAcc[octKey] ?? keyMap[upper] ?? 0;
+    res.push((octave + 1) * 12 + LETTER_SEMITONE[upper] + eff);
+    while (j < inner.length && /[\d/]/.test(inner[j])) j++; // skip per-note length
+  }
+  return res;
+}
+
+/**
+ * Parse an ABC tune string into
+ * { notes, bpm, beatsPerMeasure, title, composer, directives }.
+ *
+ * `title`/`composer` come from the standard T:/C: headers. `directives` is a
+ * map of app-specific metadata declared as ABC stylesheet directives, e.g.
+ *   %%level 3
+ *   %%blurb One of the most famous tunes ever.
+ * Standard ABC tools ignore unknown %% directives, so the .abc file stays a
+ * valid, portable tune while also carrying everything our catalog needs.
+ */
 export function parseAbc(abc) {
   const lines = abc.split(/\r?\n/);
   let meter = [4, 4];
   let unitLen = null; // beats per default unit
   let bpm = 100;
   let key = "C";
+  let title = null;
+  let composer = null;
+  const directives = {};
   const bodyLines = [];
+  // Multi-voice (V:) tunes: keep only the melody, i.e. the first voice declared.
+  let firstVoice = null;
+  let currentVoice = null;
+  let multiVoice = false;
 
   for (const raw of lines) {
     const line = raw.trim();
-    if (!line || line.startsWith("%")) continue;
+    if (!line) continue;
+    // App-specific metadata: "%%<key> <value>".
+    if (line.startsWith("%%")) {
+      const d = /^%%\s*([A-Za-z][\w-]*)\s+(.*)$/.exec(line);
+      if (d) directives[d[1].toLowerCase()] = d[2].trim();
+      continue;
+    }
+    if (line.startsWith("%")) continue;
     const header = /^([A-Za-z]):\s*(.*)$/.exec(line);
     if (header && "XTCMLKQRZNOPSWw".includes(header[1])) {
       const [, field, value] = header;
-      if (field === "M") {
+      if (field === "T") {
+        if (title == null) title = value.trim();
+      } else if (field === "C") {
+        if (composer == null) composer = value.trim();
+      } else if (field === "M") {
         if (value.trim() === "C") meter = [4, 4];
         else if (value.trim() === "C|") meter = [2, 2];
         else {
@@ -81,7 +145,18 @@ export function parseAbc(abc) {
       }
       continue;
     }
+    // Voice declaration/switch, e.g. "V:1 treble" or a bare "V:1". The first
+    // voice we see is the melody; subsequent voices are accompaniment we drop.
+    if (header && header[1] === "V") {
+      const vid = header[2].trim().split(/\s+/)[0];
+      if (firstVoice === null) firstVoice = vid;
+      currentVoice = vid;
+      multiVoice = true;
+      continue;
+    }
     if (header) continue; // unknown header line
+    // In a multi-voice tune, only the melody voice's music is kept.
+    if (multiVoice && currentVoice !== firstVoice) continue;
     bodyLines.push(line);
   }
 
@@ -96,7 +171,11 @@ export function parseAbc(abc) {
   let beat = 0;
   let id = 0;
   let measureAcc = {}; // letter+octave -> alter, reset each bar
-  let pendingBroken = 0; // >0 lengthen next, <0 shorten next
+  // Broken rhythm (a>b / a<b): '>' dots the note BEFORE it and halves the one
+  // AFTER. We keep a handle on the last emitted note so we can lengthen it
+  // retroactively, and `brokenNext` scales the next emitted duration.
+  let lastNote = null;
+  let brokenNext = 1;
 
   const body = bodyLines.join(" ");
   let i = 0;
@@ -123,10 +202,34 @@ export function parseAbc(abc) {
       continue;
     }
     if (c === "[") {
-      // inline field like [M:3/4] or chord [CEG]; skip bracket + optional ending digits
+      // Inline field like [M:3/4]: skip entirely.
       if (/[A-Za-z]:/.test(body.slice(i + 1, i + 3))) {
         const end = body.indexOf("]", i + 1);
         i = end === -1 ? body.length : end + 1;
+        continue;
+      }
+      // Chord [CEG]: play the top note (skyline melody), with the length that
+      // follows the closing bracket.
+      const end = body.indexOf("]", i + 1);
+      if (end !== -1) {
+        const midis = chordPitches(body.slice(i + 1, end), measureAcc, keyMap);
+        i = end + 1;
+        const len = readLength(body, i);
+        i = len.next;
+        let dur = unitLen * len.mult * brokenNext;
+        brokenNext = 1;
+        if (midis.length) {
+          lastNote = {
+            id: id++,
+            midi: Math.max(...midis),
+            startBeat: round3(beat),
+            durBeats: round3(dur),
+            hand: "right",
+            measure: Math.floor(beat / beatsPerMeasure) + 1,
+          };
+          notes.push(lastNote);
+          beat = round3(beat + dur);
+        }
         continue;
       }
       i++;
@@ -137,8 +240,19 @@ export function parseAbc(abc) {
       i++;
       continue;
     }
-    if (c === ">" ) { pendingBroken = 1; i++; continue; }
-    if (c === "<" ) { pendingBroken = -1; i++; continue; }
+    // 'a>b': lengthen the previous note ×1.5, halve the next. 'a<b' is the
+    // mirror. Adjust the running beat so following notes stay aligned.
+    if (c === ">" || c === "<") {
+      const lengthenPrev = c === ">";
+      if (lastNote) {
+        const delta = lastNote.durBeats * 0.5;
+        lastNote.durBeats = round3(lastNote.durBeats * (lengthenPrev ? 1.5 : 0.5));
+        beat = round3(beat + (lengthenPrev ? delta : -delta));
+      }
+      brokenNext = lengthenPrev ? 0.5 : 1.5;
+      i++;
+      continue;
+    }
     if (c === "(" || c === ")" || c === "-" || c === " " || c === "\\") {
       i++;
       continue;
@@ -165,9 +279,9 @@ export function parseAbc(abc) {
       i++;
       const len = readLength(body, i);
       i = len.next;
-      let dur = unitLen * len.mult;
-      if (pendingBroken !== 0) { dur *= pendingBroken > 0 ? 0.5 : 1.5; pendingBroken = 0; }
-      beat += dur;
+      let dur = unitLen * len.mult * brokenNext;
+      brokenNext = 1;
+      beat = round3(beat + dur);
       continue;
     }
     if (!isNoteLetter(letter)) {
@@ -192,21 +306,29 @@ export function parseAbc(abc) {
 
     const len = readLength(body, i);
     i = len.next;
-    let dur = unitLen * len.mult;
-    if (pendingBroken !== 0) { dur *= pendingBroken > 0 ? 1.5 : 0.5; pendingBroken = 0; }
+    let dur = unitLen * len.mult * brokenNext;
+    brokenNext = 1;
 
-    notes.push({
+    lastNote = {
       id: id++,
       midi,
       startBeat: round3(beat),
       durBeats: round3(dur),
       hand: "right",
       measure: Math.floor(beat / beatsPerMeasure) + 1,
-    });
-    beat += dur;
+    };
+    notes.push(lastNote);
+    beat = round3(beat + dur);
   }
 
-  return { notes, bpm, beatsPerMeasure: Math.round(beatsPerMeasure) || 4 };
+  return {
+    notes,
+    bpm,
+    beatsPerMeasure: Math.round(beatsPerMeasure) || 4,
+    title,
+    composer,
+    directives,
+  };
 }
 
 /** Read an ABC length suffix like "2", "/2", "/", "3/2" starting at index i. */
