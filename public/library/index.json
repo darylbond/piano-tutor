@@ -281,7 +281,7 @@
   },
   {
     "id": "canon-in-d",
-    "title": "Canon in D (Theme)",
+    "title": "Canon in D",
     "composer": "Johann Pachelbel",
     "level": 4,
     "bpm": 100,
@@ -298,7 +298,7 @@
     "title": "Greensleeves",
     "composer": "Traditional",
     "level": 4,
-    "bpm": 100,
+    "bpm": 108,
     "beatsPerMeasure": 3,
     "hands": [
       "right"
@@ -312,7 +312,7 @@
     "title": "Habanera (from Carmen)",
     "composer": "Georges Bizet",
     "level": 4,
-    "bpm": 92,
+    "bpm": 96,
     "beatsPerMeasure": 4,
     "hands": [
       "right"

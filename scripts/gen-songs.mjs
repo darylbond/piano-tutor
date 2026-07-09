@@ -22,6 +22,10 @@ const OUT = join(__dirname, "..", "public", "library");
 
 const LETTER = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
 
+// Default number of times a piece plays through, by difficulty level. Higher
+// levels are longer. Individual songs can override with a `reps` field.
+const REPS_FOR_LEVEL = { 1: 1, 2: 2, 3: 2, 4: 2, 5: 3 };
+
 function noteToMidi(token) {
   const m = /^([A-G])([#b]?)(\d)$/.exec(token);
   if (!m) throw new Error(`Bad note token: ${token}`);
@@ -341,45 +345,65 @@ const SONGS = [
   },
   {
     id: "canon-in-d",
-    title: "Canon in D (Theme)",
+    title: "Canon in D",
     composer: "Johann Pachelbel",
     level: 4,
     bpm: 100,
     beatsPerMeasure: 4,
+    reps: 3,
     license: "PD",
     attribution: "Pachelbel, Canon in D (c. 1680). Public domain. Engraving © Piano Tutor, CC0.",
     blurb: "The wedding favourite.",
     right:
+      // Sustained theme over the famous ground bass…
       "F#5:2 E5:2 | D5:2 C#5:2 | B4:2 A4:2 | B4:2 C#5:2 |" +
-      "D5:2 C#5:2 | B4:2 A4:2 | G4:2 F#4:2 | G4:2 E4:2",
+      "D5:2 C#5:2 | B4:2 A4:2 | G4:2 F#4:2 | G4:2 E4:2 |" +
+      // …then the flowing quarter-note variation over the same bass.
+      "F#5:1 E5:1 D5:1 A4:1 | B4:1 A4:1 G4:1 F#4:1 | G4:1 F#4:1 E4:1 D4:1 | G4:1 A4:1 B4:1 C#5:1 |" +
+      "D5:1 A4:1 B4:1 G4:1 | A4:1 F#4:1 G4:1 E4:1 | F#4:1 D4:1 E4:1 F#4:1 | G4:1 A4:1 B4:1 A4:1",
   },
   {
     id: "greensleeves",
     title: "Greensleeves",
     composer: "Traditional",
     level: 4,
-    bpm: 100,
+    bpm: 108,
     beatsPerMeasure: 3,
+    reps: 2,
     license: "PD",
     attribution: "Traditional English (c. 1580). Public domain. Engraving © Piano Tutor, CC0.",
     blurb: "A haunting Tudor melody.",
     right:
+      // Verse, first half
       "A4:1 | C5:2 D5:1 | E5:1.5 F5:0.5 E5:1 | D5:2 B4:1 | G4:1.5 A4:0.5 B4:1 |" +
-      "C5:2 A4:1 | A4:1.5 G#4:0.5 A4:1 | B4:2 G#4:1 | E4:3",
+      "C5:2 A4:1 | A4:1.5 G#4:0.5 A4:1 | B4:2 E4:1 |" +
+      // Verse, second half
+      "A4:1 | C5:2 D5:1 | E5:1.5 F5:0.5 E5:1 | D5:2 B4:1 | G4:1.5 A4:0.5 B4:1 |" +
+      "C5:1 B4:1 A4:1 | G#4:1 F#4:1 G#4:1 | A4:3 |" +
+      // Chorus, first half
+      "D5:2 F5:1 | F5:1.5 E5:0.5 D5:1 | B4:2 G4:1 | G4:1.5 A4:0.5 B4:1 |" +
+      "C5:2 A4:1 | A4:1.5 G#4:0.5 A4:1 | B4:2 E4:1 |" +
+      // Chorus, second half
+      "D5:2 F5:1 | F5:1.5 E5:0.5 D5:1 | B4:2 G4:1 | G4:1.5 A4:0.5 B4:1 |" +
+      "C5:1 B4:1 A4:1 | G#4:1 F#4:1 G#4:1 | A4:3",
   },
   {
     id: "habanera",
     title: "Habanera (from Carmen)",
     composer: "Georges Bizet",
     level: 4,
-    bpm: 92,
+    bpm: 96,
     beatsPerMeasure: 4,
+    reps: 2,
     license: "PD",
     attribution: "Bizet, 'Habanera' from Carmen (1875). Public domain. Engraving © Piano Tutor, CC0.",
     blurb: "Love is a rebellious bird.",
     right:
+      // Chromatic descent (minor), twice…
       "D5:1 C#5:0.5 C5:0.5 B4:0.5 A#4:0.5 A4:1 | A4:0.5 A4:0.5 A4:1 R:2 |" +
-      "D5:1 C#5:0.5 C5:0.5 B4:0.5 A#4:0.5 A4:1 | A4:0.5 A4:0.5 A4:1 R:2",
+      "D5:1 C#5:0.5 C5:0.5 B4:0.5 A#4:0.5 A4:1 | A4:0.5 A4:0.5 A4:1 R:2 |" +
+      // …then the brighter major answer.
+      "A4:0.5 A4:0.5 C5:1 E5:1 A5:1 | G5:0.5 F5:0.5 E5:1 D5:1 C5:1 | B4:0.5 A#4:0.5 B4:1 D5:1 C5:1 | B4:1 A4:2 R:1",
   },
   {
     id: "turkish-march",
@@ -393,7 +417,10 @@ const SONGS = [
     blurb: "The dazzling Turkish March.",
     right:
       "B4:0.5 A4:0.5 G#4:0.5 A4:0.5 C5:1 R:1 | D5:0.5 C5:0.5 B4:0.5 C5:0.5 E5:1 R:1 |" +
-      "F5:0.5 E5:0.5 D#5:0.5 E5:0.5 B5:0.5 A5:0.5 G#5:0.5 A5:0.5 | C6:0.5 B5:0.5 A5:0.5 G#5:0.5 A5:1 R:1",
+      "F5:0.5 E5:0.5 D#5:0.5 E5:0.5 B5:0.5 A5:0.5 G#5:0.5 A5:0.5 | C6:0.5 B5:0.5 A5:0.5 G#5:0.5 A5:1 R:1 |" +
+      // Descending answer down to the A-minor cadence.
+      "A5:0.5 G5:0.5 F5:0.5 E5:0.5 D5:0.5 C5:0.5 B4:0.5 A4:0.5 | G#4:0.5 A4:0.5 B4:0.5 C5:0.5 E5:0.5 A5:0.5 G#5:0.5 A5:0.5 |" +
+      "C6:1 B5:0.5 A5:0.5 E5:0.5 C5:0.5 B4:0.5 A4:0.5 | A4:2 R:2",
   },
 ];
 
@@ -402,7 +429,11 @@ async function main() {
   const attributions = ["# Music Attributions", "", "All bundled music is public domain or openly licensed.", ""];
 
   for (const song of SONGS) {
-    const notes = parseVoice(song.right, song.beatsPerMeasure, "right").map((n, i) => ({
+    // Length scales with level: harder pieces play longer (repeats = verses /
+    // da capo). Per-song `reps` overrides the level default.
+    const reps = song.reps ?? REPS_FOR_LEVEL[song.level] ?? 1;
+    const voice = Array.from({ length: reps }, () => song.right).join(" | ");
+    const notes = parseVoice(voice, song.beatsPerMeasure, "right").map((n, i) => ({
       id: i,
       ...n,
     }));
