@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Piano Tutor">
+  <rect width="512" height="512" rx="112" fill="#5b8def"/>
+  <g transform="translate(96 150)">
+    <rect x="0" y="0" width="320" height="212" rx="18" fill="#fbfcff"/>
+    <g fill="#1f2440">
+      <rect x="53" y="0" width="10" height="132"/>
+      <rect x="106" y="0" width="10" height="132"/>
+      <rect x="160" y="0" width="10" height="132"/>
+      <rect x="213" y="0" width="10" height="132"/>
+      <rect x="266" y="0" width="10" height="132"/>
+    </g>
+    <g fill="#20263f">
+      <rect x="38" y="0" width="30" height="120" rx="6"/>
+      <rect x="92" y="0" width="30" height="120" rx="6"/>
+      <rect x="198" y="0" width="30" height="120" rx="6"/>
+      <rect x="251" y="0" width="30" height="120" rx="6"/>
+    </g>
+    <circle cx="160" cy="176" r="16" fill="#ff9f45"/>
+  </g>
+</svg>
