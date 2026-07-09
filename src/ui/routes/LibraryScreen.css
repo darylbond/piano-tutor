@@ -82,7 +82,15 @@
 }
 
 .song-card__level {
-  font-size: var(--fs-sm);
+  align-self: flex-start;
+  font-size: var(--fs-xs);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--c-primary-strong);
+  background: color-mix(in srgb, var(--c-primary) 12%, transparent);
+  padding: 2px var(--sp-2);
+  border-radius: var(--r-pill);
 }
 .song-card__title {
   font-family: var(--font-display);
@@ -98,14 +106,29 @@
   font-size: var(--fs-xs);
   margin-top: var(--sp-1);
 }
-.song-card__play {
+.song-card__foot {
   margin-top: var(--sp-3);
-  align-self: flex-start;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2);
+}
+.song-card__play {
   background: var(--c-green);
   color: white;
   font-weight: 800;
   padding: var(--sp-1) var(--sp-4);
   border-radius: var(--r-pill);
+}
+.song-card__stars {
+  font-size: var(--fs-sm);
+  white-space: nowrap;
+}
+.song-card__stars .on {
+  color: var(--c-amber);
+}
+.song-card__stars .off {
+  color: var(--c-line);
 }
 
 .library__loading,

@@ -19,6 +19,7 @@
 }
 .sheet__clef {
   font-size: 68px;
+  font-family: "Segoe UI Symbol", "Noto Music", "Bravura", serif;
   fill: var(--c-text);
   dominant-baseline: middle;
 }

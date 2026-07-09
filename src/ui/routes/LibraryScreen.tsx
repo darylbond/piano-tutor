@@ -2,7 +2,16 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { SongMeta } from "@/engine/types";
 import { loadCatalog } from "@/library/catalog";
+import { useProgress } from "@/store/progress";
 import "./LibraryScreen.css";
+
+const LEVEL_NAMES: Record<number, string> = {
+  1: "Beginner",
+  2: "Easy",
+  3: "Medium",
+  4: "Hard",
+  5: "Expert",
+};
 
 export function LibraryScreen() {
   const navigate = useNavigate();
@@ -10,6 +19,7 @@ export function LibraryScreen() {
   const [error, setError] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const [level, setLevel] = useState<number | "all">("all");
+  const progress = useProgress((s) => s.songs);
 
   useEffect(() => {
     loadCatalog()
@@ -64,8 +74,9 @@ export function LibraryScreen() {
               key={lv}
               className={`chip ${level === lv ? "chip--on" : ""}`}
               onClick={() => setLevel(lv)}
+              title={`Level ${lv}`}
             >
-              {"⭐".repeat(lv)}
+              {LEVEL_NAMES[lv] ?? `Level ${lv}`}
             </button>
           ))}
         </div>
@@ -83,15 +94,27 @@ export function LibraryScreen() {
                 className="song-card"
                 onClick={() => navigate(`/play/${song.id}`)}
               >
-                <span className="song-card__level" aria-label={`Level ${song.level}`}>
-                  {"⭐".repeat(song.level)}
+                <span className="song-card__level" aria-label={`Level ${song.level}, ${LEVEL_NAMES[song.level]}`}>
+                  {LEVEL_NAMES[song.level] ?? `Level ${song.level}`}
                 </span>
                 <span className="song-card__title">{song.title}</span>
                 <span className="song-card__composer">{song.composer}</span>
                 {song.blurb && (
                   <span className="song-card__blurb">{song.blurb}</span>
                 )}
-                <span className="song-card__play" aria-hidden="true">▶ Play</span>
+                <span className="song-card__foot">
+                  <span className="song-card__play" aria-hidden="true">▶ Play</span>
+                  {progress[song.id]?.bestStars ? (
+                    <span
+                      className="song-card__stars"
+                      aria-label={`Best ${progress[song.id].bestStars} of 3 stars`}
+                    >
+                      {[1, 2, 3].map((i) => (
+                        <span key={i} className={i <= progress[song.id].bestStars ? "on" : "off"}>★</span>
+                      ))}
+                    </span>
+                  ) : null}
+                </span>
               </button>
             </li>
           ))}
