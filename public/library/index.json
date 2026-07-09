@@ -1,299 +1,5 @@
 [
   {
-    "id": "twinkle-twinkle",
-    "title": "Twinkle, Twinkle, Little Star",
-    "composer": "Traditional",
-    "level": 1,
-    "bpm": 96,
-    "beatsPerMeasure": 4,
-    "hands": [
-      "right"
-    ],
-    "license": "PD",
-    "attribution": "Traditional melody. Public domain. Engraving © Piano Tutor, CC0.",
-    "blurb": "Up above the world so high!"
-  },
-  {
-    "id": "mary-had-a-little-lamb",
-    "title": "Mary Had a Little Lamb",
-    "composer": "Traditional",
-    "level": 1,
-    "bpm": 100,
-    "beatsPerMeasure": 4,
-    "hands": [
-      "right"
-    ],
-    "license": "PD",
-    "attribution": "Traditional melody. Public domain. Engraving © Piano Tutor, CC0.",
-    "blurb": "Its fleece was white as snow."
-  },
-  {
-    "id": "hot-cross-buns",
-    "title": "Hot Cross Buns",
-    "composer": "Traditional",
-    "level": 1,
-    "bpm": 96,
-    "beatsPerMeasure": 4,
-    "hands": [
-      "right"
-    ],
-    "license": "PD",
-    "attribution": "Traditional melody. Public domain. Engraving © Piano Tutor, CC0.",
-    "blurb": "Just three notes — easy peasy!"
-  },
-  {
-    "id": "row-your-boat",
-    "title": "Row, Row, Row Your Boat",
-    "composer": "Traditional",
-    "level": 1,
-    "bpm": 100,
-    "beatsPerMeasure": 4,
-    "hands": [
-      "right"
-    ],
-    "license": "PD",
-    "attribution": "Traditional melody. Public domain. Engraving © Piano Tutor, CC0.",
-    "blurb": "Gently down the stream."
-  },
-  {
-    "id": "frere-jacques",
-    "title": "Frère Jacques",
-    "composer": "Traditional",
-    "level": 2,
-    "bpm": 104,
-    "beatsPerMeasure": 4,
-    "hands": [
-      "right"
-    ],
-    "license": "PD",
-    "attribution": "Traditional melody. Public domain. Engraving © Piano Tutor, CC0.",
-    "blurb": "Are you sleeping?"
-  },
-  {
-    "id": "london-bridge",
-    "title": "London Bridge",
-    "composer": "Traditional",
-    "level": 2,
-    "bpm": 108,
-    "beatsPerMeasure": 4,
-    "hands": [
-      "right"
-    ],
-    "license": "PD",
-    "attribution": "Traditional melody. Public domain. Engraving © Piano Tutor, CC0.",
-    "blurb": "…is falling down!"
-  },
-  {
-    "id": "old-macdonald",
-    "title": "Old MacDonald",
-    "composer": "Traditional",
-    "level": 2,
-    "bpm": 108,
-    "beatsPerMeasure": 4,
-    "hands": [
-      "right"
-    ],
-    "license": "PD",
-    "attribution": "Traditional melody. Public domain. Engraving © Piano Tutor, CC0.",
-    "blurb": "E-I-E-I-O!"
-  },
-  {
-    "id": "when-the-saints",
-    "title": "When the Saints Go Marching In",
-    "composer": "Traditional",
-    "level": 2,
-    "bpm": 112,
-    "beatsPerMeasure": 4,
-    "hands": [
-      "right"
-    ],
-    "license": "PD",
-    "attribution": "Traditional spiritual. Public domain. Engraving © Piano Tutor, CC0.",
-    "blurb": "Oh, when the saints…"
-  },
-  {
-    "id": "jingle-bells",
-    "title": "Jingle Bells",
-    "composer": "James Lord Pierpont",
-    "level": 2,
-    "bpm": 120,
-    "beatsPerMeasure": 4,
-    "hands": [
-      "right"
-    ],
-    "license": "PD",
-    "attribution": "J. L. Pierpont, 'Jingle Bells' (1857). Public domain. Engraving © Piano Tutor, CC0.",
-    "blurb": "Dashing through the snow!"
-  },
-  {
-    "id": "happy-birthday",
-    "title": "Happy Birthday",
-    "composer": "Hill sisters",
-    "level": 3,
-    "bpm": 108,
-    "beatsPerMeasure": 3,
-    "hands": [
-      "right"
-    ],
-    "license": "PD",
-    "attribution": "Mildred & Patty Hill, 'Good Morning to All' (1893). Public domain (US, 2016). Engraving © Piano Tutor, CC0.",
-    "blurb": "Sing it to someone special!"
-  },
-  {
-    "id": "minuet-in-g",
-    "title": "Minuet in G Major",
-    "composer": "Christian Petzold (1677-1733)",
-    "level": 4,
-    "bpm": 120,
-    "beatsPerMeasure": 3,
-    "hands": [
-      "right"
-    ],
-    "license": "PD",
-    "attribution": "Petzold, Minuet in G (BWV Anh. 114), formerly attr. J. S. Bach. Public domain. ABC ed. AW (SPUDS).",
-    "blurb": "An elegant dance from Bach's notebook."
-  },
-  {
-    "id": "rain-rain-go-away",
-    "title": "Rain, Rain, Go Away",
-    "composer": "Traditional",
-    "level": 1,
-    "bpm": 96,
-    "beatsPerMeasure": 4,
-    "hands": [
-      "right"
-    ],
-    "license": "PD",
-    "attribution": "Traditional nursery tune. Public domain. Engraving © Piano Tutor, CC0.",
-    "blurb": "Come again another day!"
-  },
-  {
-    "id": "lightly-row",
-    "title": "Lightly Row",
-    "composer": "Traditional",
-    "level": 2,
-    "bpm": 104,
-    "beatsPerMeasure": 4,
-    "hands": [
-      "right"
-    ],
-    "license": "PD",
-    "attribution": "Traditional folk tune. Public domain. Engraving © Piano Tutor, CC0.",
-    "blurb": "O'er the shining waves we go."
-  },
-  {
-    "id": "yankee-doodle",
-    "title": "Yankee Doodle",
-    "composer": "Traditional",
-    "level": 2,
-    "bpm": 120,
-    "beatsPerMeasure": 4,
-    "hands": [
-      "right"
-    ],
-    "license": "PD",
-    "attribution": "Traditional American tune. Public domain. Engraving © Piano Tutor, CC0.",
-    "blurb": "Stuck a feather in his cap!"
-  },
-  {
-    "id": "this-old-man",
-    "title": "This Old Man",
-    "composer": "Traditional",
-    "level": 2,
-    "bpm": 116,
-    "beatsPerMeasure": 4,
-    "hands": [
-      "right"
-    ],
-    "license": "PD",
-    "attribution": "Traditional children's song. Public domain. Engraving © Piano Tutor, CC0.",
-    "blurb": "He played knick-knack!"
-  },
-  {
-    "id": "oh-susanna",
-    "title": "Oh! Susanna",
-    "composer": "Stephen Foster",
-    "level": 2,
-    "bpm": 120,
-    "beatsPerMeasure": 4,
-    "hands": [
-      "right"
-    ],
-    "license": "PD",
-    "attribution": "Stephen Foster, 'Oh! Susanna' (1848). Public domain. Engraving © Piano Tutor, CC0.",
-    "blurb": "A banjo on my knee."
-  },
-  {
-    "id": "michael-row",
-    "title": "Michael, Row the Boat Ashore",
-    "composer": "Traditional",
-    "level": 2,
-    "bpm": 108,
-    "beatsPerMeasure": 4,
-    "hands": [
-      "right"
-    ],
-    "license": "PD",
-    "attribution": "Traditional spiritual. Public domain. Engraving © Piano Tutor, CC0.",
-    "blurb": "Hallelujah!"
-  },
-  {
-    "id": "deck-the-halls",
-    "title": "Deck the Halls",
-    "composer": "Traditional",
-    "level": 3,
-    "bpm": 120,
-    "beatsPerMeasure": 4,
-    "hands": [
-      "right"
-    ],
-    "license": "PD",
-    "attribution": "Traditional Welsh carol. Public domain. Engraving © Piano Tutor, CC0.",
-    "blurb": "Fa la la la la!"
-  },
-  {
-    "id": "canon-in-d",
-    "title": "Canon in D",
-    "composer": "Johann Pachelbel",
-    "level": 4,
-    "bpm": 64,
-    "beatsPerMeasure": 4,
-    "hands": [
-      "right"
-    ],
-    "license": "PD",
-    "attribution": "Pachelbel, Canon in D (c. 1680). Public domain. MIDI: mfiles.co.uk.",
-    "blurb": "The wedding favourite."
-  },
-  {
-    "id": "habanera",
-    "title": "Habanera (from Carmen)",
-    "composer": "Georges Bizet",
-    "level": 4,
-    "bpm": 96,
-    "beatsPerMeasure": 4,
-    "hands": [
-      "right"
-    ],
-    "license": "PD",
-    "attribution": "Bizet, 'Habanera' from Carmen (1875). Public domain. Engraving © Piano Tutor, CC0.",
-    "blurb": "Love is a rebellious bird."
-  },
-  {
-    "id": "turkish-march",
-    "title": "Rondo alla Turca (Theme)",
-    "composer": "Wolfgang Amadeus Mozart",
-    "level": 5,
-    "bpm": 120,
-    "beatsPerMeasure": 4,
-    "hands": [
-      "right"
-    ],
-    "license": "PD",
-    "attribution": "Mozart, 'Rondo alla Turca' from Sonata K.331 (1783). Public domain. Engraving © Piano Tutor, CC0.",
-    "blurb": "The dazzling Turkish March."
-  },
-  {
     "id": "amazing-grace",
     "title": "Amazing Grace",
     "composer": "Words: John Newton (1725-1807)",
@@ -336,6 +42,34 @@
     "blurb": "The beloved Londonderry Air."
   },
   {
+    "id": "deck-the-halls",
+    "title": "Deck the Hall",
+    "composer": "Old Welsh Air",
+    "level": 3,
+    "bpm": 120,
+    "beatsPerMeasure": 4,
+    "hands": [
+      "right"
+    ],
+    "license": "PD",
+    "attribution": "Old Welsh Air (\"Nos Galan\"); ABC from \"The Everyday Song Book\" (1927), transcribed by John Chambers, trillian.mit.edu",
+    "blurb": "A merry Welsh Christmas carol full of fa-la-la-las!"
+  },
+  {
+    "id": "frere-jacques",
+    "title": "Frere Jacques",
+    "composer": "Traditional",
+    "level": 2,
+    "bpm": 120,
+    "beatsPerMeasure": 4,
+    "hands": [
+      "right"
+    ],
+    "license": "PD",
+    "attribution": "Traditional French round. Public domain. ABC from folkinfo.org (Singing Together, BBC Publications, 1951), via abcnotation.com.",
+    "blurb": "A round about brother John sleeping through the morning bells!"
+  },
+  {
     "id": "fur-elise",
     "title": "Für Elise",
     "composer": "Ludwig van Beethoven",
@@ -362,6 +96,104 @@
     "license": "PD",
     "attribution": "Traditional English (c. 1580). Public domain. ABC from The Session (CC0).",
     "blurb": "A haunting Tudor melody."
+  },
+  {
+    "id": "happy-birthday",
+    "title": "Happy Birthday",
+    "composer": "Patty S. Hill and Mildred J. Hill",
+    "level": 3,
+    "bpm": 120,
+    "beatsPerMeasure": 3,
+    "hands": [
+      "right"
+    ],
+    "license": "PD",
+    "attribution": "Melody by Patty S. Hill and Mildred J. Hill (public domain since 2016); ABC from John Chambers collection, trillian.mit.edu (thisoldtractor mirror)",
+    "blurb": "The classic tune everyone sings when it's your special day!"
+  },
+  {
+    "id": "jingle-bells",
+    "title": "Jingle Bells",
+    "composer": "James Lord Pierpont, 1857",
+    "level": 2,
+    "bpm": 120,
+    "beatsPerMeasure": 2,
+    "hands": [
+      "right"
+    ],
+    "license": "PD",
+    "attribution": "James Lord Pierpont, 'Jingle Bells' (1857). Public domain. ABC from the John Chambers collection (trillian.mit.edu).",
+    "blurb": "The jolliest sleigh-ride song of them all!"
+  },
+  {
+    "id": "lightly-row",
+    "title": "Lightly row",
+    "composer": "Traditional",
+    "level": 2,
+    "bpm": 100,
+    "beatsPerMeasure": 4,
+    "hands": [
+      "right"
+    ],
+    "license": "PD",
+    "attribution": "German folk tune. Public domain. ABC transcribed by Frank Nordberg, musicaviva.com, via abcnotation.com.",
+    "blurb": "Glide across the deep blue sea in this gentle little boat song!"
+  },
+  {
+    "id": "london-bridge",
+    "title": "London Bridge",
+    "composer": "Traditional",
+    "level": 2,
+    "bpm": 100,
+    "beatsPerMeasure": 4,
+    "hands": [
+      "right"
+    ],
+    "license": "PD",
+    "attribution": "Traditional English game song, \"The Everyday Song Book\" (1927). Public domain. ABC transcribed by John Chambers (trillian.mit.edu), via abcnotation.com.",
+    "blurb": "London Bridge is falling down, my fair lady!"
+  },
+  {
+    "id": "mary-had-a-little-lamb",
+    "title": "Mary Had a Little Lamb",
+    "composer": "anon.",
+    "level": 1,
+    "bpm": 100,
+    "beatsPerMeasure": 4,
+    "hands": [
+      "right"
+    ],
+    "license": "PD",
+    "attribution": "Traditional (England); ABC from musicaviva.com via John Chambers collection (trillian.mit.edu)",
+    "blurb": "Mary's fluffy little lamb follows her everywhere she goes."
+  },
+  {
+    "id": "michael-row",
+    "title": "Michael Row the Boat Ashore",
+    "composer": "Traditional",
+    "level": 2,
+    "bpm": 90,
+    "beatsPerMeasure": 4,
+    "hands": [
+      "right"
+    ],
+    "license": "PD",
+    "attribution": "Traditional African-American spiritual. Public domain. ABC transcribed by Frank Nordberg (musicaviva.com), via the John Chambers collection.",
+    "blurb": "Row the boat ashore, hallelujah!"
+  },
+  {
+    "id": "minuet-in-g",
+    "title": "Minuet in G Major",
+    "composer": "Christian Petzold (1677-1733)",
+    "level": 4,
+    "bpm": 120,
+    "beatsPerMeasure": 3,
+    "hands": [
+      "right"
+    ],
+    "license": "PD",
+    "attribution": "Petzold, Minuet in G (BWV Anh. 114), formerly attr. J. S. Bach. Public domain. ABC ed. AW (SPUDS).",
+    "blurb": "An elegant dance from Bach's notebook."
   },
   {
     "id": "molly-malone",
@@ -392,6 +224,48 @@
     "blurb": "The happy tune everyone knows!"
   },
   {
+    "id": "oh-susanna",
+    "title": "Oh Susanna",
+    "composer": "Stephen C. Foster",
+    "level": 2,
+    "bpm": 110,
+    "beatsPerMeasure": 2,
+    "hands": [
+      "right"
+    ],
+    "license": "PD",
+    "attribution": "Stephen C. Foster, 'Oh! Susanna' (1848). Public domain. ABC transcribed by Frank Nordberg (musicaviva.com), via the John Chambers collection.",
+    "blurb": "Stephen Foster's sunny song about coming from Alabama!"
+  },
+  {
+    "id": "old-macdonald",
+    "title": "Old MacDonald Had A Farm",
+    "composer": "Traditional",
+    "level": 2,
+    "bpm": 140,
+    "beatsPerMeasure": 4,
+    "hands": [
+      "right"
+    ],
+    "license": "PD",
+    "attribution": "Traditional English. Public domain. ABC from Paul Hardy's Songs Tunebook (pghardy.net, CC BY-NC-SA), via abcnotation.com.",
+    "blurb": "Meet all the noisy animals on the farm, E-I-E-I-O!"
+  },
+  {
+    "id": "row-your-boat",
+    "title": "Row, Row, Row Your Boat",
+    "composer": "Traditional",
+    "level": 1,
+    "bpm": 100,
+    "beatsPerMeasure": 3,
+    "hands": [
+      "right"
+    ],
+    "license": "PD",
+    "attribution": "Traditional round; ABC from John Chambers collection (trillian.mit.edu)",
+    "blurb": "Row your boat gently down the stream, merrily on your way."
+  },
+  {
     "id": "scarborough-fair",
     "title": "Scarborough Fair",
     "composer": "Traditional",
@@ -406,6 +280,34 @@
     "blurb": "Parsley, sage, rosemary and thyme."
   },
   {
+    "id": "this-old-man",
+    "title": "This Old Man",
+    "composer": "Traditional",
+    "level": 2,
+    "bpm": 110,
+    "beatsPerMeasure": 4,
+    "hands": [
+      "right"
+    ],
+    "license": "PD",
+    "attribution": "Traditional. Public domain. ABC transcribed by Frank Nordberg (musicaviva.com), via the John Chambers collection.",
+    "blurb": "This old man, he played one, knick-knack on your thumb!"
+  },
+  {
+    "id": "twinkle-twinkle",
+    "title": "Twinkle, Twinkle Little Star",
+    "composer": "Traditional",
+    "level": 1,
+    "bpm": 100,
+    "beatsPerMeasure": 4,
+    "hands": [
+      "right"
+    ],
+    "license": "PD",
+    "attribution": "Traditional kids' song; ABC from John Chambers collection (trillian.mit.edu, R.L. Walker abc/twinkle)",
+    "blurb": "A sparkly little tune about a star up in the night sky."
+  },
+  {
     "id": "we-wish-you-a-merry-christmas",
     "title": "We Wish You a Merry Christmas",
     "composer": "Traditional",
@@ -418,5 +320,61 @@
     "license": "PD",
     "attribution": "Trad. English carol (West Country). Public domain. ABC via folkinfo.org.",
     "blurb": "And a happy new year!"
+  },
+  {
+    "id": "when-the-saints",
+    "title": "When the saints go marching in",
+    "composer": "Traditional",
+    "level": 2,
+    "bpm": 100,
+    "beatsPerMeasure": 4,
+    "hands": [
+      "right"
+    ],
+    "license": "PD",
+    "attribution": "American spiritual, traditional. Public domain. ABC transcribed by Frank Nordberg, musicaviva.com, via abcnotation.com.",
+    "blurb": "A toe-tapping march you'll want to sing along to!"
+  },
+  {
+    "id": "yankee-doodle",
+    "title": "Yankee Doodle",
+    "composer": "Traditional",
+    "level": 2,
+    "bpm": 120,
+    "beatsPerMeasure": 2,
+    "hands": [
+      "right"
+    ],
+    "license": "PD",
+    "attribution": "Traditional (c. 1730). Public domain. ABC from the John Chambers collection (trillian.mit.edu).",
+    "blurb": "A bouncy marching tune from way back!"
+  },
+  {
+    "id": "canon-in-d",
+    "title": "Canon in D",
+    "composer": "Johann Pachelbel",
+    "level": 4,
+    "bpm": 64,
+    "beatsPerMeasure": 4,
+    "hands": [
+      "right"
+    ],
+    "license": "PD",
+    "attribution": "Pachelbel, Canon in D (c. 1680). Public domain. MIDI: mfiles.co.uk.",
+    "blurb": "The wedding favourite."
+  },
+  {
+    "id": "turkish-march",
+    "title": "Rondo alla Turca",
+    "composer": "Wolfgang Amadeus Mozart",
+    "level": 5,
+    "bpm": 132,
+    "beatsPerMeasure": 1,
+    "hands": [
+      "right"
+    ],
+    "license": "PD",
+    "attribution": "Mozart, Rondo alla Turca from Sonata K.331 (1783). Public domain. MIDI: mfiles.co.uk.",
+    "blurb": "The dazzling Turkish March."
   }
 ]

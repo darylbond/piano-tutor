@@ -1,0 +1,18 @@
+%%id twinkle-twinkle
+%%level 1
+%%bpm 100
+%%blurb A sparkly little tune about a star up in the night sky.
+%%license PD
+%%attribution Traditional kids' song; ABC from John Chambers collection (trillian.mit.edu, R.L. Walker abc/twinkle)
+X:1
+T:Twinkle, Twinkle Little Star
+C:Traditional
+M:4/4
+L:1/4
+K:D
+|"D"D D A A|"G"B B "D"A2
+|"G"G G "D"F F|"A"E/2E/2E/2E/2 "D"D2
+|A A "G"G G|"D"F F "A"E2
+|"D"A A "G"G G|"D"F F "A"E2
+|"D"D   D    A    A|"G"B B "D"A2
+|"G"G    G "D"F    F|"A"E     E "D"D2|

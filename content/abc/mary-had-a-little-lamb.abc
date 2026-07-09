@@ -1,0 +1,15 @@
+%%id mary-had-a-little-lamb
+%%level 1
+%%bpm 100
+%%blurb Mary's fluffy little lamb follows her everywhere she goes.
+%%license PD
+%%attribution Traditional (England); ABC from musicaviva.com via John Chambers collection (trillian.mit.edu)
+X:1
+T:Mary Had a Little Lamb
+C:anon.
+O:England
+M:4/4
+L:1/4
+K:G
+d | B>A GA | BB B2 | AA A2 | Bd d
+d | B>A GA | BB B B | AA BA | G3 :|

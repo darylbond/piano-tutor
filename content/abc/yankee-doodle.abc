@@ -1,0 +1,16 @@
+%%id yankee-doodle
+%%level 2
+%%bpm 120
+%%blurb A bouncy marching tune from way back!
+%%license PD
+%%attribution Traditional (c. 1730). Public domain. ABC from the John Chambers collection (trillian.mit.edu).
+X:1
+T:Yankee Doodle
+C:Traditional
+M:2/4
+L:1/8
+K:D
+|: "D"dd  ef |    df "A7"eA |  "D"dd     ef |    d2 "A7"c2 \
+|  "D"dd  ef | "G"gf     ed | "A7"cA     Bc | "D"d2     d2 :|
+|: "G"B>c BA |    Bc     d2 |  "D"A>B    AG |    F2     A2 \
+|  "G"B>c BA |    Bc     dB |  "D"Ad "A7"ce | "D"d2     d2 :|
