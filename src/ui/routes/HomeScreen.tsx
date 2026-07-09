@@ -1,4 +1,6 @@
 import { useNavigate } from "react-router-dom";
+import { Mascot } from "@/ui/components/Mascot";
+import { useProgress } from "@/store/progress";
 import "./HomeScreen.css";
 
 interface HomeCard {
@@ -35,14 +37,18 @@ const CARDS: HomeCard[] = [
 
 export function HomeScreen() {
   const navigate = useNavigate();
+  const stars = useProgress((s) => s.totalStars)();
 
   return (
     <div className="home">
       <div className="home__hero">
-        <h1 className="home__title">
-          Hi! Ready to play? <span aria-hidden="true">🎹</span>
-        </h1>
-        <p className="home__subtitle">Pick something to start.</p>
+        <Mascot mood="wave" size={132} />
+        <h1 className="home__title">Hi! Ready to play?</h1>
+        <p className="home__subtitle">
+          {stars > 0
+            ? `You've earned ${stars} ${stars === 1 ? "star" : "stars"} ⭐ — pick something to earn more!`
+            : "Pick something to start."}
+        </p>
       </div>
 
       <div className="home__cards">

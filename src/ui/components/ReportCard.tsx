@@ -1,5 +1,6 @@
 import type { PlayResult } from "@/engine/scorer";
 import { BigButton } from "./BigButton";
+import { Mascot } from "./Mascot";
 import "./ReportCard.css";
 
 interface ReportCardProps {
@@ -30,6 +31,7 @@ export function ReportCard({
 
   return (
     <div className="report" role="dialog" aria-label="Your results">
+      <Mascot mood={result.stars >= 2 ? "cheer" : "happy"} size={96} />
       <div className="report__stars" aria-label={`${result.stars} out of 3 stars`}>
         {[1, 2, 3].map((i) => (
           <span

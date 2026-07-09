@@ -1,0 +1,46 @@
+.mascot__shadow {
+  fill: rgba(31, 36, 64, 0.12);
+}
+.mascot__face {
+  fill: var(--c-blue);
+}
+.mascot__antenna {
+  stroke: var(--c-ink-soft);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+/* Gentle idle bob. */
+.mascot__body {
+  transform-origin: 60px 96px;
+  animation: mascot-bob 3s ease-in-out infinite;
+}
+@keyframes mascot-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+.mascot--cheer .mascot__body {
+  animation: mascot-cheer 0.7s var(--ease-bounce) infinite;
+}
+@keyframes mascot-cheer {
+  0%, 100% { transform: translateY(0) rotate(-3deg); }
+  50% { transform: translateY(-8px) rotate(3deg); }
+}
+
+.mascot--wave .mascot__antenna {
+  animation: mascot-wave 1.4s ease-in-out infinite;
+  transform-origin: 60px 30px;
+}
+@keyframes mascot-wave {
+  0%, 100% { transform: rotate(-8deg); }
+  50% { transform: rotate(8deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mascot__body,
+  .mascot--cheer .mascot__body,
+  .mascot--wave .mascot__antenna {
+    animation: none;
+  }
+}
