@@ -66,3 +66,7 @@
   color: var(--c-text-soft);
   font-weight: 700;
 }
+.mic__tune--nudge {
+  color: var(--c-primary-strong);
+  font-size: var(--fs-sm);
+}

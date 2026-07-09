@@ -24,6 +24,7 @@ export function MicButton({ mic, active, onToggle }: MicButtonProps) {
   const micSensitivity = useSettings((s) => s.micSensitivity);
   const setMicSensitivity = useSettings((s) => s.setMicSensitivity);
   const tuningCents = useSettings((s) => s.tuningCents);
+  const micCalibrated = useSettings((s) => s.micCalibrated);
 
   // Apply sensitivity + tuning offset to the (possibly running) mic.
   useEffect(() => {
@@ -98,7 +99,12 @@ export function MicButton({ mic, active, onToggle }: MicButtonProps) {
         </label>
       )}
       {error && <span className="mic__error">{error}</span>}
-      <Link to="/calibrate" className="mic__tune">Tune microphone</Link>
+      <Link
+        to="/calibrate"
+        className={`mic__tune ${!micCalibrated ? "mic__tune--nudge" : ""}`}
+      >
+        {micCalibrated ? "Tune microphone" : "👉 Tune to your piano first"}
+      </Link>
     </div>
   );
 }
