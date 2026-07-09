@@ -1,27 +1,34 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import type { Song, NoteVerdict } from "@/engine/types";
 import { loadSong, songLengthBeats } from "@/library/catalog";
 import { TransportClock } from "@/engine/clock";
 import { Synth } from "@/engine/synth";
 import { WaitModeMatcher } from "@/engine/matcher";
+import { scorePlaythrough, type PlayResult } from "@/engine/scorer";
 import { beatsToMs } from "@/engine/music";
 import { NoteRainView } from "@/ui/components/NoteRainView";
 import { BigButton } from "@/ui/components/BigButton";
 import { MicButton } from "@/ui/components/MicButton";
+import { ReportCard } from "@/ui/components/ReportCard";
 import { MicNoteInput } from "@/audio/mic";
 import { NoteRainRenderer } from "@/engine/note-rain";
 import { useSettings } from "@/store/settings";
+import { useProgress } from "@/store/progress";
 import "./PlayScreen.css";
 
 type Mode = "idle" | "listen" | "along" | "done";
 
 export function PlayScreen() {
   const { songId } = useParams<{ songId: string }>();
+  const navigate = useNavigate();
   const [song, setSong] = useState<Song | null>(null);
   const [mode, setMode] = useState<Mode>("idle");
   const [error, setError] = useState<string>("");
   const [progressPct, setProgressPct] = useState(0);
+  const [result, setResult] = useState<PlayResult | null>(null);
+  const [isNewBest, setIsNewBest] = useState(false);
+  const recordPlay = useProgress((s) => s.recordPlay);
 
   const showKeyLabels = useSettings((s) => s.showKeyLabels);
   const tempoScale = useSettings((s) => s.tempoScale);
@@ -92,6 +99,7 @@ export function PlayScreen() {
 
   function startListen() {
     if (!song) return;
+    setResult(null);
     matcherRef.current = null;
     verdictsRef.current = new Map();
     const clock = clockRef.current;
@@ -106,6 +114,7 @@ export function PlayScreen() {
 
   function startAlong() {
     if (!song) return;
+    setResult(null);
     synthRef.current.stop();
     synthRef.current.ensureContext(); // unlock audio on this user gesture
     const matcher = new WaitModeMatcher(song.notes);
@@ -145,7 +154,7 @@ export function PlayScreen() {
         if (matcher.isComplete()) {
           targetMsRef.current = endMsRef.current;
           setProgressPct(100);
-          setMode("done");
+          finishAlong(matcher);
         } else {
           targetMsRef.current = beatsToMs(matcher.cursorBeat(), song.bpm);
           const total = song.notes.length;
@@ -158,6 +167,24 @@ export function PlayScreen() {
     },
     [song, getTimeMs],
   );
+
+  // Score a completed wait-mode run, persist it, and show the report card.
+  function finishAlong(matcher: WaitModeMatcher) {
+    if (!song) return;
+    const verdicts = matcher.getVerdicts();
+    const scored = song.notes.map((n) => ({
+      verdict: verdicts.get(n.id) ?? "missed",
+      measure: n.measure,
+    }));
+    const r = scorePlaythrough(scored);
+    const prevBest = useProgress.getState().getProgress(song.id)?.bestStars ?? 0;
+    setIsNewBest(r.stars > prevBest);
+    recordPlay(song.id, { stars: r.stars, accuracy: r.accuracy }, Date.now());
+    micRef.current?.stop();
+    setMicOn(false);
+    setResult(r);
+    setMode("done");
+  }
 
   const handleKeyPress = useCallback(
     (midi: number) => handleNote(midi, { audioFeedback: true, source: "keyboard" }),
@@ -239,8 +266,16 @@ export function PlayScreen() {
         />
       )}
 
-      {mode === "done" && (
-        <p className="play__cheer">🎉 Nice playing! Want to go again?</p>
+      {mode === "done" && result && (
+        <ReportCard
+          result={result}
+          isNewBest={isNewBest}
+          onPlayAgain={startAlong}
+          onBackToLibrary={() => navigate("/library")}
+        />
+      )}
+      {mode === "done" && !result && (
+        <p className="play__cheer">🎉 That's the song! Try “Play along” to join in.</p>
       )}
 
       <div className="play__tempo">
