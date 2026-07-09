@@ -1,5 +1,6 @@
 import type { SongMeta, ScoreNote, Song } from "@/engine/types";
 import { isExerciseId, getExercise } from "@/lessons/exercises";
+import { isUserSongId, getUserSong, listUserSongs } from "@/library/user-songs";
 
 /**
  * Loads the bundled song library from static JSON under public/library.
@@ -12,14 +13,20 @@ function libUrl(path: string): string {
   return `${base}library/${path}`.replace(/\/{2,}/g, "/");
 }
 
-let catalogCache: SongMeta[] | null = null;
+let bundledCache: SongMeta[] | null = null;
 
-export async function loadCatalog(): Promise<SongMeta[]> {
-  if (catalogCache) return catalogCache;
+async function loadBundled(): Promise<SongMeta[]> {
+  if (bundledCache) return bundledCache;
   const res = await fetch(libUrl("index.json"));
   if (!res.ok) throw new Error(`Failed to load library index (${res.status})`);
-  catalogCache = (await res.json()) as SongMeta[];
-  return catalogCache;
+  bundledCache = (await res.json()) as SongMeta[];
+  return bundledCache;
+}
+
+/** Bundled songs plus the user's imported songs (freshly listed each call). */
+export async function loadCatalog(): Promise<SongMeta[]> {
+  const [bundled, user] = await Promise.all([loadBundled(), listUserSongs()]);
+  return [...user, ...bundled];
 }
 
 const songCache = new Map<string, Song>();
@@ -36,7 +43,15 @@ export async function loadSong(id: string): Promise<Song> {
     return exercise;
   }
 
-  const catalog = await loadCatalog();
+  // User-imported songs come from IndexedDB, not the bundled library.
+  if (isUserSongId(id)) {
+    const song = await getUserSong(id);
+    if (!song) throw new Error(`Unknown imported song: ${id}`);
+    songCache.set(id, song);
+    return song;
+  }
+
+  const catalog = await loadBundled();
   const meta = catalog.find((s) => s.id === id);
   if (!meta) throw new Error(`Unknown song: ${id}`);
 

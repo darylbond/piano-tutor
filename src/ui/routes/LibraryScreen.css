@@ -1,6 +1,29 @@
 .library__heading {
   text-align: center;
 }
+.library__head {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-4);
+  flex-wrap: wrap;
+  margin-bottom: var(--sp-4);
+}
+.library__add {
+  min-height: var(--touch-min);
+  padding: 0 var(--sp-5);
+  border: none;
+  border-radius: var(--r-pill);
+  background: var(--c-primary);
+  color: white;
+  font-weight: 800;
+  font-size: var(--fs-md);
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+}
+.library__add:hover {
+  background: var(--c-primary-strong);
+}
 
 .library__controls {
   display: flex;
@@ -57,6 +80,28 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: var(--sp-4);
+}
+
+.song-cell {
+  position: relative;
+}
+.song-card__delete {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  z-index: 1;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--r-pill);
+  border: none;
+  background: var(--c-ink-soft);
+  color: white;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+}
+.song-card__delete:hover {
+  background: var(--c-orange-deep);
 }
 
 .song-card {

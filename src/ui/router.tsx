@@ -8,6 +8,7 @@ import { PracticeScreen } from "@/ui/routes/PracticeScreen";
 import { ProgressScreen } from "@/ui/routes/ProgressScreen";
 import { SettingsScreen } from "@/ui/routes/SettingsScreen";
 import { CalibrateScreen } from "@/ui/routes/CalibrateScreen";
+import { ImportScreen } from "@/ui/routes/ImportScreen";
 import { NotFoundScreen } from "@/ui/routes/NotFoundScreen";
 
 // HashRouter is deliberate: GitHub Pages has no server-side rewrite, so a
@@ -27,6 +28,7 @@ export const router = createHashRouter([
       { path: "progress", element: <ProgressScreen /> },
       { path: "settings", element: <SettingsScreen /> },
       { path: "calibrate", element: <CalibrateScreen /> },
+      { path: "import", element: <ImportScreen /> },
       { path: "*", element: <NotFoundScreen /> },
     ],
   },

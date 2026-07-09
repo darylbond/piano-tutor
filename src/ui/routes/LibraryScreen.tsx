@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { SongMeta } from "@/engine/types";
 import { loadCatalog } from "@/library/catalog";
+import { isUserSongId, deleteUserSong } from "@/library/user-songs";
 import { useProgress } from "@/store/progress";
 import "./LibraryScreen.css";
 
@@ -21,11 +22,17 @@ export function LibraryScreen() {
   const [level, setLevel] = useState<number | "all">("all");
   const progress = useProgress((s) => s.songs);
 
+  const [reloadKey, setReloadKey] = useState(0);
   useEffect(() => {
     loadCatalog()
       .then(setSongs)
       .catch((e) => setError(String(e)));
-  }, []);
+  }, [reloadKey]);
+
+  async function removeSong(id: string) {
+    await deleteUserSong(id);
+    setReloadKey((k) => k + 1);
+  }
 
   const filtered = useMemo(() => {
     if (!songs) return [];
@@ -51,7 +58,12 @@ export function LibraryScreen() {
 
   return (
     <div className="library">
-      <h2 className="library__heading">Pick a song 🎵</h2>
+      <div className="library__head">
+        <h2 className="library__heading">Pick a song 🎵</h2>
+        <button className="library__add" onClick={() => navigate("/import")}>
+          ＋ Add a song
+        </button>
+      </div>
 
       <div className="library__controls">
         <input
@@ -89,13 +101,25 @@ export function LibraryScreen() {
       ) : (
         <ul className="song-grid">
           {filtered.map((song) => (
-            <li key={song.id}>
+            <li key={song.id} className="song-cell">
+              {isUserSongId(song.id) && (
+                <button
+                  className="song-card__delete"
+                  title="Remove this imported song"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (confirm(`Remove "${song.title}"?`)) void removeSong(song.id);
+                  }}
+                >
+                  ✕
+                </button>
+              )}
               <button
                 className="song-card"
                 onClick={() => navigate(`/play/${song.id}`)}
               >
                 <span className="song-card__level" aria-label={`Level ${song.level}, ${LEVEL_NAMES[song.level]}`}>
-                  {LEVEL_NAMES[song.level] ?? `Level ${song.level}`}
+                  {isUserSongId(song.id) ? "★ Yours" : LEVEL_NAMES[song.level] ?? `Level ${song.level}`}
                 </span>
                 <span className="song-card__title">{song.title}</span>
                 <span className="song-card__composer">{song.composer}</span>
