@@ -31,6 +31,11 @@ export class Synth {
     if (this.master) this.master.gain.value = v;
   }
 
+  /** Current audio-clock time in seconds (0 before the context exists). */
+  now(): number {
+    return this.ctx ? this.ctx.currentTime : 0;
+  }
+
   /** Play a single note now (for live key feedback / echo exercises). */
   playNote(midi: number, durationMs = 400) {
     const ctx = this.ensureContext();

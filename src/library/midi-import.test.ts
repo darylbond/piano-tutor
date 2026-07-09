@@ -36,6 +36,23 @@ describe("parseMidiToSong", () => {
     expect(song.notes.map((n) => n.midi)).toEqual([67, 72]);
   });
 
+  it("merges multiple selected tracks without dechording", () => {
+    const data = buildMidi((m) => {
+      const bass = m.addTrack();
+      const mel = m.addTrack();
+      bass.addNote({ midi: 48, time: 0, duration: 1 });
+      mel.addNote({ midi: 72, time: 0, duration: 1 }); // same onset, other track
+      mel.addNote({ midi: 74, time: 1, duration: 1 });
+    });
+    const { song, tracks, chosenTracks } = parseMidiToSong(data, "Both", {
+      trackIndices: [0, 1],
+    });
+    expect(tracks).toHaveLength(2);
+    expect(chosenTracks).toEqual([0, 1]);
+    // Both onset-0 notes are kept (no skyline across tracks), sorted by pitch.
+    expect(song.notes.map((n) => n.midi)).toEqual([48, 72, 74]);
+  });
+
   it("prefers the higher-pitched track as the melody", () => {
     const data = buildMidi((m) => {
       const bass = m.addTrack();

@@ -17,8 +17,24 @@ import type { Song, ScoreNote } from "@/engine/types";
 export interface MidiImportOptions {
   /** Force a specific track index instead of auto-detecting the melody. */
   trackIndex?: number;
+  /**
+   * Import several tracks at once (e.g. both hands), merged into one note list.
+   * When one track is chosen we skyline-dechord it to a clean melody; when more
+   * than one is chosen we keep every note so the full arrangement is preserved.
+   */
+  trackIndices?: number[];
   /** Quantize note starts/durations to this fraction of a beat (0 = off). */
   quantize?: number;
+}
+
+/** Summary of one non-empty MIDI track, for the import track picker. */
+export interface TrackInfo {
+  index: number;
+  noteCount: number;
+  avgPitch: number;
+  lowPitch: number;
+  highPitch: number;
+  name?: string;
 }
 
 const round3 = (n: number) => Math.round(n * 1000) / 1000;
@@ -52,9 +68,28 @@ function pickMelodyTrack(midi: Midi): number {
 
 export interface MidiParseResult {
   song: Song;
-  /** Info for the import UI: how many tracks, which was chosen. */
-  trackCount: number;
-  chosenTrack: number;
+  /** All non-empty tracks, so the import UI can offer per-track checkboxes. */
+  tracks: TrackInfo[];
+  /** Which track indices this parse used. */
+  chosenTracks: number[];
+}
+
+/** Summarise every non-empty track for the import picker. */
+function describeTracks(midi: Midi): TrackInfo[] {
+  const out: TrackInfo[] = [];
+  midi.tracks.forEach((t, index) => {
+    if (!t.notes.length) return;
+    const pitches = t.notes.map((n) => n.midi);
+    out.push({
+      index,
+      noteCount: t.notes.length,
+      avgPitch: Math.round(pitches.reduce((s, p) => s + p, 0) / pitches.length),
+      lowPitch: Math.min(...pitches),
+      highPitch: Math.max(...pitches),
+      name: t.name || undefined,
+    });
+  });
+  return out;
 }
 
 export function parseMidiToSong(
@@ -68,20 +103,36 @@ export function parseMidiToSong(
   const beatsPerMeasure = midi.header.timeSignatures[0]?.timeSignature?.[0] ?? 4;
   const grid = opts.quantize ?? 0;
 
-  const trackCount = midi.tracks.filter((t) => t.notes.length > 0).length;
-  const chosen = opts.trackIndex ?? pickMelodyTrack(midi);
-  const track = midi.tracks[chosen];
+  const tracks = describeTracks(midi);
+  const chosenTracks =
+    opts.trackIndices && opts.trackIndices.length > 0
+      ? opts.trackIndices
+      : [opts.trackIndex ?? pickMelodyTrack(midi)];
+  // One track → skyline to a clean single melody. Several → keep every note so
+  // the player hears the combined arrangement they're auditioning.
+  const single = chosenTracks.length === 1;
 
-  // Skyline: at each start tick, keep only the highest note (dechord).
-  const byStart = new Map<number, { midi: number; ticks: number; durTicks: number }>();
-  for (const n of track?.notes ?? []) {
-    const existing = byStart.get(n.ticks);
-    if (!existing || n.midi > existing.midi) {
-      byStart.set(n.ticks, { midi: n.midi, ticks: n.ticks, durTicks: n.durationTicks });
+  const collected: { midi: number; ticks: number; durTicks: number }[] = [];
+  for (const ti of chosenTracks) {
+    const track = midi.tracks[ti];
+    if (!track) continue;
+    if (single) {
+      const byStart = new Map<number, { midi: number; ticks: number; durTicks: number }>();
+      for (const n of track.notes) {
+        const existing = byStart.get(n.ticks);
+        if (!existing || n.midi > existing.midi) {
+          byStart.set(n.ticks, { midi: n.midi, ticks: n.ticks, durTicks: n.durationTicks });
+        }
+      }
+      collected.push(...byStart.values());
+    } else {
+      for (const n of track.notes) {
+        collected.push({ midi: n.midi, ticks: n.ticks, durTicks: n.durationTicks });
+      }
     }
   }
 
-  const sorted = [...byStart.values()].sort((a, b) => a.ticks - b.ticks);
+  const sorted = collected.sort((a, b) => a.ticks - b.ticks || a.midi - b.midi);
   const notes: ScoreNote[] = sorted.map((n, id) => {
     const startBeat = quantizeTo(n.ticks / ppq, grid);
     const durBeats = Math.max(0.25, quantizeTo(n.durTicks / ppq, grid));
@@ -109,7 +160,7 @@ export function parseMidiToSong(
     notes,
   };
 
-  return { song, trackCount, chosenTrack: chosen };
+  return { song, tracks, chosenTracks };
 }
 
 /** Rough difficulty from length and pitch range. */

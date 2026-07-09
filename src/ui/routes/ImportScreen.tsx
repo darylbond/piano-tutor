@@ -1,11 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { Song } from "@/engine/types";
 import { parseMidiToSong, slug, type MidiParseResult } from "@/library/midi-import";
 import { saveUserSong } from "@/library/user-songs";
 import { Synth } from "@/engine/synth";
-import { songLengthBeats } from "@/library/catalog";
-import { beatsToMs } from "@/engine/music";
+import { midiToName } from "@/engine/music";
+import { NoteRainView } from "@/ui/components/NoteRainView";
 import { BigButton } from "@/ui/components/BigButton";
 import { useSettings } from "@/store/settings";
 import "./ImportScreen.css";
@@ -16,10 +16,13 @@ export function ImportScreen() {
   const bufferRef = useRef<ArrayBuffer | null>(null);
   const [parsed, setParsed] = useState<MidiParseResult | null>(null);
   const [title, setTitle] = useState("");
-  const [track, setTrack] = useState<number | undefined>(undefined);
+  const [selected, setSelected] = useState<number[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [previewing, setPreviewing] = useState(false);
   const synthRef = useRef(new Synth());
+  // Audio-clock zero (seconds) for the current preview; drives the Note Rain.
+  const previewZero = useRef(0);
+  const previewingRef = useRef(false);
   const previewTimer = useRef<number | undefined>(undefined);
 
   useEffect(() => {
@@ -33,20 +36,31 @@ export function ImportScreen() {
   function stopPreview() {
     synthRef.current.stop();
     window.clearTimeout(previewTimer.current);
+    previewingRef.current = false;
     setPreviewing(false);
   }
 
   function playPreview(song: Song) {
     stopPreview();
     synthRef.current.setVolume(useSettings.getState().volume);
-    synthRef.current.playSong(song.notes, song.bpm, 0, 1);
+    // playSong returns the audio-clock time (s) where the playhead's 0 sits.
+    previewZero.current = synthRef.current.playSong(song.notes, song.bpm, 0, 1);
+    previewingRef.current = true;
     setPreviewing(true);
-    const ms = beatsToMs(songLengthBeats(song.notes), song.bpm) + 500;
-    previewTimer.current = window.setTimeout(() => setPreviewing(false), ms);
+    const lastBeat = song.notes.reduce((m, n) => Math.max(m, n.startBeat + n.durBeats), 0);
+    const ms = (lastBeat / song.bpm) * 60_000 + 600;
+    previewTimer.current = window.setTimeout(stopPreview, ms);
+  }
+
+  // Note Rain reads the live audio playhead while previewing, else sits at t=0.
+  function getTimeMs() {
+    if (!previewingRef.current) return 0;
+    return (synthRef.current.now() - previewZero.current) * 1000;
   }
 
   async function onFile(file: File) {
     setError(null);
+    stopPreview();
     const name = file.name.replace(/\.midi?$/i, "");
     try {
       const buffer = await file.arrayBuffer();
@@ -58,17 +72,25 @@ export function ImportScreen() {
       }
       setParsed(result);
       setTitle(name);
-      setTrack(undefined);
+      setSelected(result.chosenTracks);
     } catch {
       setError("That doesn't look like a MIDI file I can read.");
     }
   }
 
-  function reparseTrack(index: number | undefined) {
-    if (!bufferRef.current) return;
+  function reparse(indices: number[]) {
+    if (!bufferRef.current || indices.length === 0) return;
     stopPreview();
-    setTrack(index);
-    setParsed(parseMidiToSong(bufferRef.current, title || "Song", { trackIndex: index }));
+    setSelected(indices);
+    setParsed(parseMidiToSong(bufferRef.current, title || "Song", { trackIndices: indices }));
+  }
+
+  function toggleTrack(index: number) {
+    const next = selected.includes(index)
+      ? selected.filter((i) => i !== index)
+      : [...selected, index].sort((a, b) => a - b);
+    if (next.length === 0) return; // keep at least one track selected
+    reparse(next);
   }
 
   async function save() {
@@ -85,13 +107,21 @@ export function ImportScreen() {
   }
 
   const song = parsed?.song;
+  const notes = song?.notes ?? [];
+  const range = useMemo(() => {
+    if (!notes.length) return { low: 60, high: 72 };
+    const lo = Math.min(...notes.map((n) => n.midi));
+    const hi = Math.max(...notes.map((n) => n.midi));
+    return { low: lo - 2, high: hi + 2 };
+  }, [notes]);
 
   return (
     <div className="import">
       <h2>Add a Song 🎼</h2>
       <p className="import__intro">
-        Import a <strong>MIDI (.mid)</strong> file from your computer — the app
-        pulls out the melody so you can play along. Your song stays on this device.
+        Import a <strong>MIDI (.mid)</strong> file from your computer. Tick the
+        part(s) you want, watch and hear a preview, then save. Your song stays on
+        this device.
       </p>
 
       <input
@@ -118,26 +148,43 @@ export function ImportScreen() {
             <input value={title} onChange={(e) => setTitle(e.target.value)} />
           </label>
 
+          {/* Scrolling notes preview */}
+          <div className="import__rain">
+            <NoteRainView
+              notes={notes}
+              lowMidi={range.low}
+              highMidi={range.high}
+              bpm={song.bpm}
+              getTimeMs={getTimeMs}
+              showKeyLabels={false}
+            />
+          </div>
+
           <div className="import__stats">
-            <span>{song.notes.length} notes</span>
+            <span>{notes.length} notes</span>
             <span>Level {song.level}</span>
             <span>{song.bpm} bpm</span>
           </div>
 
-          {parsed.trackCount > 1 && (
-            <label className="import__field">
-              <span>Which part is the melody?</span>
-              <select
-                value={track ?? parsed.chosenTrack}
-                onChange={(e) => reparseTrack(Number(e.target.value))}
-              >
-                {Array.from({ length: parsed.trackCount }, (_, i) => (
-                  <option key={i} value={i}>
-                    Track {i + 1}
-                  </option>
-                ))}
-              </select>
-            </label>
+          {parsed.tracks.length > 1 && (
+            <fieldset className="import__tracks">
+              <legend>Which part(s) to play?</legend>
+              {parsed.tracks.map((t) => (
+                <label key={t.index} className="import__track">
+                  <input
+                    type="checkbox"
+                    checked={selected.includes(t.index)}
+                    onChange={() => toggleTrack(t.index)}
+                  />
+                  <span className="import__track-name">
+                    {t.name || `Track ${t.index + 1}`}
+                  </span>
+                  <span className="import__track-meta">
+                    {t.noteCount} notes · {midiToName(t.lowPitch)}–{midiToName(t.highPitch)}
+                  </span>
+                </label>
+              ))}
+            </fieldset>
           )}
 
           <div className="import__actions">
@@ -148,11 +195,11 @@ export function ImportScreen() {
             ) : (
               <BigButton
                 variant="ghost"
-                icon="🔊"
+                icon="▶️"
                 onClick={() => playPreview(song)}
-                disabled={song.notes.length === 0}
+                disabled={notes.length === 0}
               >
-                Preview this part
+                Preview
               </BigButton>
             )}
             <BigButton variant="secondary" icon="💾" onClick={save}>
@@ -161,9 +208,8 @@ export function ImportScreen() {
           </div>
 
           <p className="import__hint">
-            Tip: press <strong>Preview</strong> to hear the chosen part. If it
-            sounds wrong, try another track — many files put the melody on its
-            own part.
+            Tip: tick one part for a clean melody, or several to hear them
+            together. If it sounds wrong, try a different part.
           </p>
         </div>
       )}
