@@ -51,12 +51,13 @@ export function LessonRunner({ lesson, onFinish }: LessonRunnerProps) {
   const targets = useMemo(() => {
     if (!step || stepComplete) return new Set<number>();
     if (step.kind === "find") return new Set([step.midi]);
+    if (step.kind === "chord") return new Set(step.midis.filter((m) => !correct.has(m)));
     if (step.kind === "play") {
       const m = matcherRef.current;
       return new Set(m ? m.currentStep().map((n) => n.midi) : []);
     }
     return new Set<number>();
-  }, [step, stepComplete]);
+  }, [step, stepComplete, correct]);
 
   const handlePressRef = useRef<(midi: number) => void>(() => {});
   handlePressRef.current = (midi: number) => {
@@ -67,6 +68,14 @@ export function LessonRunner({ lesson, onFinish }: LessonRunnerProps) {
       if (midi === step.midi) {
         setCorrect(new Set([midi]));
         setStepComplete(true);
+      }
+    } else if (step.kind === "chord") {
+      if (step.midis.includes(midi)) {
+        setCorrect((prev) => {
+          const next = new Set(prev).add(midi);
+          if (step.midis.every((m) => next.has(m))) setStepComplete(true);
+          return next;
+        });
       }
     } else if (step.kind === "play") {
       const m = matcherRef.current;

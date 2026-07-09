@@ -13,6 +13,25 @@
   margin: 0 auto var(--sp-4);
 }
 
+.practice__section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+.practice__section-title {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin: var(--sp-2) 0 0;
+  font-size: var(--fs-md);
+  border-bottom: 2px solid var(--c-line);
+  padding-bottom: var(--sp-2);
+}
+.practice__section-badge {
+  font-size: var(--fs-sm);
+  letter-spacing: -2px;
+}
+
 .practice__grid {
   list-style: none;
   padding: 0;
