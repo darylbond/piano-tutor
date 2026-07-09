@@ -1,22 +1,24 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import type { Song } from "@/engine/types";
+import type { Song, NoteVerdict } from "@/engine/types";
 import { loadSong, songLengthBeats } from "@/library/catalog";
 import { TransportClock } from "@/engine/clock";
 import { Synth } from "@/engine/synth";
+import { WaitModeMatcher } from "@/engine/matcher";
 import { beatsToMs } from "@/engine/music";
 import { NoteRainView } from "@/ui/components/NoteRainView";
 import { BigButton } from "@/ui/components/BigButton";
 import { useSettings } from "@/store/settings";
 import "./PlayScreen.css";
 
-type Status = "loading" | "ready" | "playing" | "done" | "error";
+type Mode = "idle" | "listen" | "along" | "done";
 
 export function PlayScreen() {
   const { songId } = useParams<{ songId: string }>();
   const [song, setSong] = useState<Song | null>(null);
-  const [status, setStatus] = useState<Status>("loading");
+  const [mode, setMode] = useState<Mode>("idle");
   const [error, setError] = useState<string>("");
+  const [progressPct, setProgressPct] = useState(0);
 
   const showKeyLabels = useSettings((s) => s.showKeyLabels);
   const tempoScale = useSettings((s) => s.tempoScale);
@@ -24,72 +26,123 @@ export function PlayScreen() {
 
   const clockRef = useRef(new TransportClock());
   const synthRef = useRef(new Synth());
+  const matcherRef = useRef<WaitModeMatcher | null>(null);
   const endMsRef = useRef(0);
+  const modeRef = useRef<Mode>("idle");
+  modeRef.current = mode;
+
+  // For wait-mode: the displayed playhead eases toward the matcher's cursor.
+  const displayMsRef = useRef(0);
+  const targetMsRef = useRef(0);
+  const verdictsRef = useRef<Map<number, NoteVerdict>>(new Map());
 
   useEffect(() => {
     if (!songId) return;
-    setStatus("loading");
+    setMode("idle");
     loadSong(songId)
       .then((s) => {
         setSong(s);
-        const lengthBeats = songLengthBeats(s.notes);
-        endMsRef.current = beatsToMs(lengthBeats, s.bpm);
-        setStatus("ready");
+        endMsRef.current = beatsToMs(songLengthBeats(s.notes), s.bpm);
       })
-      .catch((e) => {
-        setError(String(e));
-        setStatus("error");
-      });
+      .catch((e) => setError(String(e)));
   }, [songId]);
 
-  // Stop audio when leaving the screen.
   useEffect(() => {
     const synth = synthRef.current;
     return () => synth.stop();
   }, []);
 
-  // Auto-stop at the end of the piece.
+  // Auto-stop Listen mode at the end of the piece.
   useEffect(() => {
-    if (status !== "playing") return;
+    if (mode !== "listen") return;
     const id = window.setInterval(() => {
-      if (clockRef.current.now() >= endMsRef.current + 400) {
+      const t = clockRef.current.now();
+      setProgressPct(Math.min(100, (t / endMsRef.current) * 100));
+      if (t >= endMsRef.current + 500) {
         clockRef.current.pause();
-        setStatus("done");
+        setMode("done");
       }
     }, 100);
     return () => window.clearInterval(id);
-  }, [status]);
+  }, [mode]);
 
-  const rate = tempoScale;
+  // The renderer calls this every frame; branch on the active mode.
+  const getTimeMs = useCallback(() => {
+    if (modeRef.current === "along") {
+      // Ease the visible playhead toward the current cursor position.
+      const target = targetMsRef.current;
+      displayMsRef.current += (target - displayMsRef.current) * 0.18;
+      return displayMsRef.current;
+    }
+    return clockRef.current.now();
+  }, []);
 
-  const getTimeMs = useMemo(() => () => clockRef.current.now(), []);
-
-  function handleListen() {
+  function startListen() {
     if (!song) return;
+    matcherRef.current = null;
+    verdictsRef.current = new Map();
     const clock = clockRef.current;
-    clock.reset();
-    clock.setRate(1);
     synthRef.current.setVolume(useSettings.getState().volume);
-    synthRef.current.playSong(song.notes, song.bpm, 0, rate);
-    // Align the visual clock to "now" and run at the chosen rate.
-    clock.setRate(rate);
+    synthRef.current.playSong(song.notes, song.bpm, 0, tempoScale);
+    clock.setRate(tempoScale);
     clock.seek(0);
     clock.start();
-    setStatus("playing");
+    setProgressPct(0);
+    setMode("listen");
   }
 
-  function handleStop() {
+  function startAlong() {
+    if (!song) return;
+    synthRef.current.stop();
+    synthRef.current.ensureContext(); // unlock audio on this user gesture
+    const matcher = new WaitModeMatcher(song.notes);
+    matcherRef.current = matcher;
+    verdictsRef.current = matcher.getVerdicts();
+    displayMsRef.current = 0;
+    targetMsRef.current = beatsToMs(matcher.cursorBeat(), song.bpm);
+    setProgressPct(0);
+    setMode("along");
+  }
+
+  function stopAll() {
     synthRef.current.stop();
     clockRef.current.pause();
-    setStatus("ready");
+    matcherRef.current = null;
+    setMode("idle");
   }
 
-  function handleRestart() {
-    handleStop();
-    handleListen();
-  }
+  const handleKeyPress = useCallback(
+    (midi: number) => {
+      const matcher = matcherRef.current;
+      if (!song) return;
+      // Always give audio feedback for the tapped key.
+      synthRef.current.playNote(midi, 350);
+      if (modeRef.current !== "along" || !matcher) return;
 
-  if (status === "error") {
+      const advanced = matcher.handleEvent({
+        midi,
+        timeMs: performance.now(),
+        source: "keyboard",
+      });
+      if (advanced) {
+        if (matcher.isComplete()) {
+          targetMsRef.current = endMsRef.current;
+          setProgressPct(100);
+          setMode("done");
+        } else {
+          targetMsRef.current = beatsToMs(matcher.cursorBeat(), song.bpm);
+          const total = song.notes.length;
+          const doneCount = [...matcher.getVerdicts().values()].filter(
+            (v) => v === "hit",
+          ).length;
+          setProgressPct(Math.round((doneCount / total) * 100));
+        }
+      }
+    },
+    [song],
+  );
+
+  if (error) {
     return (
       <div className="play play--message">
         <p>Couldn't load this song. {error}</p>
@@ -97,13 +150,11 @@ export function PlayScreen() {
       </div>
     );
   }
-
-  if (!song) {
-    return <div className="play play--message">Loading song…</div>;
-  }
+  if (!song) return <div className="play play--message">Loading song…</div>;
 
   const low = Math.min(...song.notes.map((n) => n.midi)) - 2;
   const high = Math.max(...song.notes.map((n) => n.midi)) + 2;
+  const playing = mode === "listen" || mode === "along";
 
   return (
     <div className="play">
@@ -116,31 +167,41 @@ export function PlayScreen() {
         <span className="play__level">{"⭐".repeat(song.level)}</span>
       </div>
 
+      <div className="play__progress" aria-hidden="true">
+        <div className="play__progress-fill" style={{ width: `${progressPct}%` }} />
+      </div>
+
       <NoteRainView
         notes={song.notes}
         lowMidi={low}
         highMidi={high}
         bpm={song.bpm}
         getTimeMs={getTimeMs}
+        verdicts={verdictsRef.current}
         showKeyLabels={showKeyLabels}
+        onKeyPress={handleKeyPress}
       />
 
       <div className="play__controls">
-        {status === "playing" ? (
+        {!playing ? (
           <>
-            <BigButton variant="secondary" size="lg" icon="⏸" onClick={handleStop}>
-              Stop
+            <BigButton variant="primary" size="lg" icon="▶" onClick={startListen}>
+              {mode === "done" ? "Listen again" : "Listen"}
             </BigButton>
-            <BigButton variant="ghost" icon="⏮" onClick={handleRestart}>
-              Restart
+            <BigButton variant="secondary" size="lg" icon="🎹" onClick={startAlong}>
+              Play along
             </BigButton>
           </>
         ) : (
-          <BigButton variant="primary" size="lg" icon="▶" onClick={handleListen}>
-            {status === "done" ? "Play again" : "Listen"}
+          <BigButton variant="ghost" size="lg" icon="⏹" onClick={stopAll}>
+            Stop
           </BigButton>
         )}
       </div>
+
+      {mode === "done" && (
+        <p className="play__cheer">🎉 Nice playing! Want to go again?</p>
+      )}
 
       <div className="play__tempo">
         <label htmlFor="tempo">Speed: {Math.round(tempoScale * 100)}%</label>
@@ -152,12 +213,14 @@ export function PlayScreen() {
           step={0.05}
           value={tempoScale}
           onChange={(e) => setTempoScale(Number(e.target.value))}
+          disabled={playing}
         />
       </div>
 
       <p className="play__hint">
-        ▶ <strong>Listen</strong> plays the song so you can watch the notes fall.
-        Soon you'll play along on your own piano and the app will listen back!
+        {mode === "along"
+          ? "Tap the falling notes' keys on the keyboard (or play them on your piano). The cursor waits for you!"
+          : "▶ Listen watches the song play. 🎹 Play along waits for you to play each note."}
       </p>
     </div>
   );

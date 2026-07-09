@@ -240,6 +240,33 @@ export class NoteRainRenderer {
     }
   }
 
+  /**
+   * Map a pointer position (CSS pixels relative to the canvas) to a piano key,
+   * or null if the point isn't on the keyboard. Black keys win over white where
+   * they overlap, matching a real keyboard's hit priority.
+   */
+  keyAt(px: number, py: number): number | null {
+    const kbH = this.keyboardHeight();
+    const top = this.height - kbH;
+    if (py < top || py > this.height) return null;
+
+    const xNorm = px / this.width;
+    const blackH = kbH * 0.62;
+
+    // Prefer black keys when the tap is in their (upper) region.
+    if (py <= top + blackH) {
+      for (const k of this.kb.keys) {
+        if (k.white) continue;
+        if (xNorm >= k.x && xNorm <= k.x + k.w) return k.midi;
+      }
+    }
+    for (const k of this.kb.keys) {
+      if (!k.white) continue;
+      if (xNorm >= k.x && xNorm <= k.x + k.w) return k.midi;
+    }
+    return null;
+  }
+
   private roundRect(x: number, y: number, w: number, h: number, r: number) {
     const { ctx } = this;
     const rr = Math.min(r, w / 2, h / 2);

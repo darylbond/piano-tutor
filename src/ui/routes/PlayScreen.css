@@ -41,6 +41,27 @@
   white-space: nowrap;
 }
 
+.play__progress {
+  height: 10px;
+  background: var(--c-line);
+  border-radius: var(--r-pill);
+  overflow: hidden;
+}
+.play__progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--c-green), var(--c-blue));
+  border-radius: var(--r-pill);
+  transition: width var(--dur-med) ease;
+}
+
+.play__cheer {
+  text-align: center;
+  font-size: var(--fs-lg);
+  font-weight: 800;
+  color: var(--c-green);
+  margin: 0;
+}
+
 .play__controls {
   display: flex;
   gap: var(--sp-3);

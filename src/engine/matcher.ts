@@ -38,11 +38,10 @@ export class WaitModeMatcher {
   /** scoreNoteId -> whether it has been satisfied within the current step. */
   private satisfied = new Set<number>();
   private verdicts = new Map<number, NoteVerdict>();
+  private opts: MatchOptions;
 
-  constructor(
-    notes: ScoreNote[],
-    private opts: MatchOptions = DEFAULT_MATCH,
-  ) {
+  constructor(notes: ScoreNote[], opts: MatchOptions = DEFAULT_MATCH) {
+    this.opts = opts;
     this.steps = groupIntoSteps(notes);
     for (const n of notes) this.verdicts.set(n.id, "pending");
   }

@@ -14,6 +14,8 @@ interface NoteRainViewProps {
   showKeyLabels?: boolean;
   /** Imperative handle so parents can flash keys on live input. */
   rendererRef?: (r: NoteRainRenderer | null) => void;
+  /** Called when the user taps a key on the on-screen keyboard. */
+  onKeyPress?: (midi: number) => void;
 }
 
 export function NoteRainView({
@@ -25,12 +27,15 @@ export function NoteRainView({
   verdicts,
   showKeyLabels = true,
   rendererRef,
+  onKeyPress,
 }: NoteRainViewProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rendererObj = useRef<NoteRainRenderer | null>(null);
-  // Keep the latest getTimeMs without re-creating the animation loop.
+  // Keep the latest callbacks without re-creating the animation loop.
   const getTimeRef = useRef(getTimeMs);
   getTimeRef.current = getTimeMs;
+  const onKeyPressRef = useRef(onKeyPress);
+  onKeyPressRef.current = onKeyPress;
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -48,6 +53,16 @@ export function NoteRainView({
     const ro = new ResizeObserver(() => renderer.resize());
     ro.observe(canvas);
 
+    const handlePointerDown = (ev: PointerEvent) => {
+      const rect = canvas.getBoundingClientRect();
+      const midi = renderer.keyAt(ev.clientX - rect.left, ev.clientY - rect.top);
+      if (midi != null) {
+        renderer.lightKey(midi, getTimeRef.current());
+        onKeyPressRef.current?.(midi);
+      }
+    };
+    canvas.addEventListener("pointerdown", handlePointerDown);
+
     let raf = 0;
     const loop = () => {
       renderer.render(getTimeRef.current());
@@ -58,6 +73,7 @@ export function NoteRainView({
     return () => {
       cancelAnimationFrame(raf);
       ro.disconnect();
+      canvas.removeEventListener("pointerdown", handlePointerDown);
       rendererObj.current = null;
       rendererRef?.(null);
     };
