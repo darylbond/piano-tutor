@@ -100,6 +100,77 @@ const SONGS = [
       "E4:1 D4:1 C4:1 D4:1 | E4:1 E4:1 E4:2 | D4:1 D4:1 D4:2 | E4:1 G4:1 G4:2 |" +
       "E4:1 D4:1 C4:1 D4:1 | E4:1 E4:1 E4:1 E4:1 | D4:1 D4:1 E4:1 D4:1 | C4:4",
   },
+  {
+    id: "hot-cross-buns",
+    title: "Hot Cross Buns",
+    composer: "Traditional",
+    level: 1,
+    bpm: 96,
+    beatsPerMeasure: 4,
+    license: "PD",
+    attribution: "Traditional melody. Public domain. Engraving © Piano Tutor, CC0.",
+    blurb: "Just three notes — easy peasy!",
+    right:
+      "E4:1 D4:1 C4:2 | E4:1 D4:1 C4:2 |" +
+      "C4:0.5 C4:0.5 C4:0.5 C4:0.5 D4:0.5 D4:0.5 D4:0.5 D4:0.5 | E4:1 D4:1 C4:2",
+  },
+  {
+    id: "row-your-boat",
+    title: "Row, Row, Row Your Boat",
+    composer: "Traditional",
+    level: 1,
+    bpm: 100,
+    beatsPerMeasure: 4,
+    license: "PD",
+    attribution: "Traditional melody. Public domain. Engraving © Piano Tutor, CC0.",
+    blurb: "Gently down the stream.",
+    right:
+      "C4:1 C4:1 C4:0.75 D4:0.25 E4:1 | E4:0.75 D4:0.25 E4:0.75 F4:0.25 G4:2 |" +
+      "C5:0.5 C5:0.5 G4:0.5 G4:0.5 E4:0.5 E4:0.5 C4:0.5 C4:0.5 | G4:0.75 F4:0.25 E4:0.75 D4:0.25 C4:2",
+  },
+  {
+    id: "frere-jacques",
+    title: "Frère Jacques",
+    composer: "Traditional",
+    level: 2,
+    bpm: 104,
+    beatsPerMeasure: 4,
+    license: "PD",
+    attribution: "Traditional melody. Public domain. Engraving © Piano Tutor, CC0.",
+    blurb: "Are you sleeping?",
+    right:
+      "C4:1 D4:1 E4:1 C4:1 | C4:1 D4:1 E4:1 C4:1 | E4:1 F4:1 G4:2 | E4:1 F4:1 G4:2 |" +
+      "G4:0.5 A4:0.5 G4:0.5 F4:0.5 E4:1 C4:1 | G4:0.5 A4:0.5 G4:0.5 F4:0.5 E4:1 C4:1 |" +
+      "C4:1 G3:1 C4:2 | C4:1 G3:1 C4:2",
+  },
+  {
+    id: "london-bridge",
+    title: "London Bridge",
+    composer: "Traditional",
+    level: 2,
+    bpm: 108,
+    beatsPerMeasure: 4,
+    license: "PD",
+    attribution: "Traditional melody. Public domain. Engraving © Piano Tutor, CC0.",
+    blurb: "…is falling down!",
+    right:
+      "G4:1.5 A4:0.5 G4:1 F4:1 | E4:1 F4:1 G4:2 | D4:1 E4:1 F4:2 | E4:1 F4:1 G4:2 |" +
+      "G4:1.5 A4:0.5 G4:1 F4:1 | E4:1 F4:1 G4:2 | D4:2 G4:1 E4:1 | C4:4",
+  },
+  {
+    id: "old-macdonald",
+    title: "Old MacDonald",
+    composer: "Traditional",
+    level: 2,
+    bpm: 108,
+    beatsPerMeasure: 4,
+    license: "PD",
+    attribution: "Traditional melody. Public domain. Engraving © Piano Tutor, CC0.",
+    blurb: "E-I-E-I-O!",
+    right:
+      "C4:1 C4:1 C4:1 G3:1 | A3:1 A3:1 G3:2 | E4:1 E4:1 D4:1 D4:1 | C4:4 |" +
+      "G3:1 C4:1 C4:1 C4:1 | G3:1 A3:1 A3:1 G3:1 | E4:0.5 E4:0.5 D4:0.5 D4:0.5 C4:2",
+  },
 ];
 
 async function main() {

@@ -40,5 +40,75 @@
     "license": "PD",
     "attribution": "Traditional melody. Public domain. Engraving © Piano Tutor, CC0.",
     "blurb": "Its fleece was white as snow."
+  },
+  {
+    "id": "hot-cross-buns",
+    "title": "Hot Cross Buns",
+    "composer": "Traditional",
+    "level": 1,
+    "bpm": 96,
+    "beatsPerMeasure": 4,
+    "hands": [
+      "right"
+    ],
+    "license": "PD",
+    "attribution": "Traditional melody. Public domain. Engraving © Piano Tutor, CC0.",
+    "blurb": "Just three notes — easy peasy!"
+  },
+  {
+    "id": "row-your-boat",
+    "title": "Row, Row, Row Your Boat",
+    "composer": "Traditional",
+    "level": 1,
+    "bpm": 100,
+    "beatsPerMeasure": 4,
+    "hands": [
+      "right"
+    ],
+    "license": "PD",
+    "attribution": "Traditional melody. Public domain. Engraving © Piano Tutor, CC0.",
+    "blurb": "Gently down the stream."
+  },
+  {
+    "id": "frere-jacques",
+    "title": "Frère Jacques",
+    "composer": "Traditional",
+    "level": 2,
+    "bpm": 104,
+    "beatsPerMeasure": 4,
+    "hands": [
+      "right"
+    ],
+    "license": "PD",
+    "attribution": "Traditional melody. Public domain. Engraving © Piano Tutor, CC0.",
+    "blurb": "Are you sleeping?"
+  },
+  {
+    "id": "london-bridge",
+    "title": "London Bridge",
+    "composer": "Traditional",
+    "level": 2,
+    "bpm": 108,
+    "beatsPerMeasure": 4,
+    "hands": [
+      "right"
+    ],
+    "license": "PD",
+    "attribution": "Traditional melody. Public domain. Engraving © Piano Tutor, CC0.",
+    "blurb": "…is falling down!"
+  },
+  {
+    "id": "old-macdonald",
+    "title": "Old MacDonald",
+    "composer": "Traditional",
+    "level": 2,
+    "bpm": 108,
+    "beatsPerMeasure": 4,
+    "hands": [
+      "right"
+    ],
+    "license": "PD",
+    "attribution": "Traditional melody. Public domain. Engraving © Piano Tutor, CC0.",
+    "blurb": "E-I-E-I-O!"
   }
 ]
