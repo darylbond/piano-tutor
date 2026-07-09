@@ -1,19 +1,5 @@
 [
   {
-    "id": "ode-to-joy",
-    "title": "Ode to Joy",
-    "composer": "Ludwig van Beethoven",
-    "level": 1,
-    "bpm": 100,
-    "beatsPerMeasure": 4,
-    "hands": [
-      "right"
-    ],
-    "license": "PD",
-    "attribution": "Beethoven, 'Ode to Joy' (Symphony No. 9, 1824). Public domain. ABC from the John Chambers collection.",
-    "blurb": "The happy tune everyone knows!"
-  },
-  {
     "id": "twinkle-twinkle",
     "title": "Twinkle, Twinkle, Little Star",
     "composer": "Traditional",
@@ -154,23 +140,9 @@
     "blurb": "Sing it to someone special!"
   },
   {
-    "id": "fur-elise",
-    "title": "Für Elise",
-    "composer": "Ludwig van Beethoven",
-    "level": 3,
-    "bpm": 72,
-    "beatsPerMeasure": 3,
-    "hands": [
-      "right"
-    ],
-    "license": "PD",
-    "attribution": "Beethoven, Bagatelle in A minor 'Für Elise' (1810). Public domain. ABC transcription (F. Nordberg, public domain).",
-    "blurb": "One of the most famous tunes ever."
-  },
-  {
     "id": "minuet-in-g",
-    "title": "Minuet in G",
-    "composer": "Christian Petzold",
+    "title": "Minuet in G Major",
+    "composer": "Christian Petzold (1677-1733)",
     "level": 4,
     "bpm": 120,
     "beatsPerMeasure": 3,
@@ -178,7 +150,7 @@
       "right"
     ],
     "license": "PD",
-    "attribution": "Petzold, Minuet in G (BWV Anh. 114). Public domain. Engraving © Piano Tutor, CC0.",
+    "attribution": "Petzold, Minuet in G (BWV Anh. 114), formerly attr. J. S. Bach. Public domain. ABC ed. AW (SPUDS).",
     "blurb": "An elegant dance from Bach's notebook."
   },
   {
@@ -284,28 +256,14 @@
     "title": "Canon in D",
     "composer": "Johann Pachelbel",
     "level": 4,
-    "bpm": 100,
+    "bpm": 64,
     "beatsPerMeasure": 4,
     "hands": [
       "right"
     ],
     "license": "PD",
-    "attribution": "Pachelbel, Canon in D (c. 1680). Public domain. Engraving © Piano Tutor, CC0.",
+    "attribution": "Pachelbel, Canon in D (c. 1680). Public domain. MIDI: mfiles.co.uk.",
     "blurb": "The wedding favourite."
-  },
-  {
-    "id": "greensleeves",
-    "title": "Greensleeves",
-    "composer": "Traditional",
-    "level": 4,
-    "bpm": 96,
-    "beatsPerMeasure": 3,
-    "hands": [
-      "right"
-    ],
-    "license": "PD",
-    "attribution": "Traditional English (c. 1580). Public domain. ABC from The Session (CC0).",
-    "blurb": "A haunting Tudor melody."
   },
   {
     "id": "habanera",
@@ -334,5 +292,89 @@
     "license": "PD",
     "attribution": "Mozart, 'Rondo alla Turca' from Sonata K.331 (1783). Public domain. Engraving © Piano Tutor, CC0.",
     "blurb": "The dazzling Turkish March."
+  },
+  {
+    "id": "amazing-grace",
+    "title": "Amazing Grace",
+    "composer": "Words: John Newton (1725-1807)",
+    "level": 2,
+    "bpm": 90,
+    "beatsPerMeasure": 3,
+    "hands": [
+      "right"
+    ],
+    "license": "PD",
+    "attribution": "Trad. American melody 'New Britain'; words John Newton (1725-1807). Public domain. ABC: John Chambers collection.",
+    "blurb": "A grace that saved a wretch like me."
+  },
+  {
+    "id": "auld-lang-syne",
+    "title": "Auld Lang Syne",
+    "composer": "Traditional",
+    "level": 3,
+    "bpm": 92,
+    "beatsPerMeasure": 4,
+    "hands": [
+      "right"
+    ],
+    "license": "PD",
+    "attribution": "Trad. Scots (Burns, 1788), melody 'Can Ye Labour Lea'. Public domain. ABC after R. L. Walker (John Chambers collection).",
+    "blurb": "Should auld acquaintance be forgot."
+  },
+  {
+    "id": "danny-boy",
+    "title": "Danny Boy",
+    "composer": "Traditional",
+    "level": 4,
+    "bpm": 72,
+    "beatsPerMeasure": 4,
+    "hands": [
+      "right"
+    ],
+    "license": "PD",
+    "attribution": "Trad. Irish 'Londonderry Air'; 'Danny Boy' words F. Weatherly (1910). Public domain. ABC: John Chambers collection.",
+    "blurb": "The beloved Londonderry Air."
+  },
+  {
+    "id": "fur-elise",
+    "title": "Für Elise",
+    "composer": "Ludwig van Beethoven",
+    "level": 3,
+    "bpm": 72,
+    "beatsPerMeasure": 3,
+    "hands": [
+      "right"
+    ],
+    "license": "PD",
+    "attribution": "Beethoven, Bagatelle in A minor 'Für Elise' (1810). Public domain. ABC transcription (F. Nordberg, public domain).",
+    "blurb": "One of the most famous tunes ever."
+  },
+  {
+    "id": "greensleeves",
+    "title": "Greensleeves",
+    "composer": "Traditional",
+    "level": 4,
+    "bpm": 96,
+    "beatsPerMeasure": 3,
+    "hands": [
+      "right"
+    ],
+    "license": "PD",
+    "attribution": "Traditional English (c. 1580). Public domain. ABC from The Session (CC0).",
+    "blurb": "A haunting Tudor melody."
+  },
+  {
+    "id": "ode-to-joy",
+    "title": "Ode to Joy",
+    "composer": "Ludwig van Beethoven",
+    "level": 1,
+    "bpm": 100,
+    "beatsPerMeasure": 4,
+    "hands": [
+      "right"
+    ],
+    "license": "PD",
+    "attribution": "Beethoven, 'Ode to Joy' (Symphony No. 9, 1824). Public domain. ABC from the John Chambers collection.",
+    "blurb": "The happy tune everyone knows!"
   }
 ]

@@ -1,0 +1,16 @@
+%%id fur-elise
+%%level 3
+%%blurb One of the most famous tunes ever.
+%%license PD
+%%attribution Beethoven, Bagatelle in A minor 'Für Elise' (1810). Public domain. ABC transcription (F. Nordberg, public domain).
+X:1
+T:Für Elise
+C:Ludwig van Beethoven
+M:3/4
+L:1/8
+Q:1/4=72
+K:C
+e^d|:e^deB=dc|A2 z CE A|B2 z E^GB|c2 z Ee^d|e^deB=dc|A2 z CEA|B2 z EcB|
+[1 A4 e^d:|[2 A2 zBCd|:e3 Gfe|d3 Fed|c3 Edc|B2 z2 E2|e2 z2 e2|
+e'2 z ^de^d|e^deB=dc|A2 z CEA|B2 z E^GB|c2 z Ee^d|e^deB=dc|A2 z CEA|
+B2 z EcB|A2 zBcd|A6|

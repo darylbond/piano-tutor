@@ -1,0 +1,16 @@
+%%id ode-to-joy
+%%level 1
+%%bpm 100
+%%blurb The happy tune everyone knows!
+%%license PD
+%%attribution Beethoven, 'Ode to Joy' (Symphony No. 9, 1824). Public domain. ABC from the John Chambers collection.
+X:1
+T:Ode to Joy
+C:Ludwig van Beethoven
+M:4/4
+L:1/4
+K:G
+B B c d|d c B A|G G A B|B>A A2|
+B B c d|d c B A|G G A B|A>G G2|
+A A B G|A B/c/ B G|A B/c/ B A|G A D2|
+B B c d|d c B A|G G A B|A>G G2|

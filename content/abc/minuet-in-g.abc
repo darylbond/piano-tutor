@@ -1,0 +1,26 @@
+%%id minuet-in-g
+%%level 4
+%%bpm 120
+%%blurb An elegant dance from Bach's notebook.
+%%license PD
+%%attribution Petzold, Minuet in G (BWV Anh. 114), formerly attr. J. S. Bach. Public domain. ABC ed. AW (SPUDS).
+X:10
+T:Minuet in G Major
+T:BWV Anhang 114
+C:Christian Petzold (1677-1733)
+L:1/4
+M:3/4
+K:G
+V:1 treble
+V:2 treble
+V:3 bass
+V:4 bass
+V:1
+"G"d G/A/"D7/a"B/c/ | "G/b"d .G .G | "C"e Mc/d/e/f/ | "G/b"g .G .G |
+"Am"Mc d/c/""B/A/ | "G"B c/B/A/G/ | "D"F "G"G/A/B/G/ |"D    D7"{B} A3 |
+"G"d G/A/"D7/a"B/c/ | "G/b"d .G .G | "C"e Mc/d/e/f/ | "G/b"g .G .G |
+"Am"Mc d/c/"D/f#"B/A/ | "G"B c/B/"G/b"A/G/ | "Am/c"A "G/d"B/A/"D"G/F/ | "G"G3 ::
+"G"b g/a/b/g/ | "D/f#"a d/e/f/d/ | "Em"g e/f/g/d/ | "A"^c B/c/ A |
+"A"A/B/^c/d/e/f/ | "G/b"g "D"f "A/c#"e | "D"f "D/f#"A "A"^c | "D       D7"d3 |
+"G/b"d G/F/ G | "C"e G/F/ G | "G/b"d "D/a"c "G"B | "D"A/G/F/G/ A |
+"D"D/E/F/G/A/B/ | "C/e"c "G"PB "D/f#"A | "G"B/d/ "G/b"G "D"F | "G"G3 :|
