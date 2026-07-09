@@ -242,6 +242,159 @@ const SONGS = [
       "D5:1 G4:0.5 A4:0.5 B4:0.5 C5:0.5 | D5:1 G4:1 G4:1 | E5:1 C5:0.5 D5:0.5 E5:0.5 F#5:0.5 | G5:1 G4:1 G4:1 |" +
       "C5:1 D5:0.5 C5:0.5 B4:0.5 A4:0.5 | B4:1 C5:0.5 B4:0.5 A4:0.5 G4:0.5 | F#4:1 G4:0.5 A4:0.5 B4:0.5 G4:0.5 | A4:3",
   },
+  {
+    id: "rain-rain-go-away",
+    title: "Rain, Rain, Go Away",
+    composer: "Traditional",
+    level: 1,
+    bpm: 96,
+    beatsPerMeasure: 4,
+    license: "PD",
+    attribution: "Traditional nursery tune. Public domain. Engraving © Piano Tutor, CC0.",
+    blurb: "Come again another day!",
+    right:
+      "G4:1 E4:1 G4:1 R:1 | A4:1 G4:1 E4:2 | G4:1 E4:1 G4:1 R:1 | A4:1 G4:1 E4:2",
+  },
+  {
+    id: "lightly-row",
+    title: "Lightly Row",
+    composer: "Traditional",
+    level: 2,
+    bpm: 104,
+    beatsPerMeasure: 4,
+    license: "PD",
+    attribution: "Traditional folk tune. Public domain. Engraving © Piano Tutor, CC0.",
+    blurb: "O'er the shining waves we go.",
+    right:
+      "G4:1 E4:1 E4:2 | F4:1 D4:1 D4:2 | C4:1 D4:1 E4:1 F4:1 | G4:1 G4:1 G4:2 |" +
+      "E4:1 E4:1 E4:1 F4:1 | D4:1 D4:1 D4:2 | C4:1 E4:1 G4:1 G4:1 | E4:2 C4:2",
+  },
+  {
+    id: "yankee-doodle",
+    title: "Yankee Doodle",
+    composer: "Traditional",
+    level: 2,
+    bpm: 120,
+    beatsPerMeasure: 4,
+    license: "PD",
+    attribution: "Traditional American tune. Public domain. Engraving © Piano Tutor, CC0.",
+    blurb: "Stuck a feather in his cap!",
+    right:
+      "C4:1 C4:1 D4:1 E4:1 | C4:1 E4:1 D4:2 | C4:1 C4:1 D4:1 E4:1 | C4:2 B3:2 |" +
+      "C4:1 C4:1 D4:1 E4:1 | F4:1 E4:1 D4:1 C4:1 | B3:1 G3:1 A3:1 B3:1 | C4:4",
+  },
+  {
+    id: "this-old-man",
+    title: "This Old Man",
+    composer: "Traditional",
+    level: 2,
+    bpm: 116,
+    beatsPerMeasure: 4,
+    license: "PD",
+    attribution: "Traditional children's song. Public domain. Engraving © Piano Tutor, CC0.",
+    blurb: "He played knick-knack!",
+    right:
+      "G4:1 E4:1 G4:2 | G4:1 E4:1 G4:2 | A4:1 G4:1 F4:1 E4:1 | D4:2 R:2 |" +
+      "C4:1 C4:1 C4:1 D4:1 | E4:1 F4:1 G4:2 | G4:1 F4:1 E4:1 D4:1 | C4:4",
+  },
+  {
+    id: "oh-susanna",
+    title: "Oh! Susanna",
+    composer: "Stephen Foster",
+    level: 2,
+    bpm: 120,
+    beatsPerMeasure: 4,
+    license: "PD",
+    attribution: "Stephen Foster, 'Oh! Susanna' (1848). Public domain. Engraving © Piano Tutor, CC0.",
+    blurb: "A banjo on my knee.",
+    right:
+      "C4:0.5 D4:0.5 E4:1 G4:1 G4:1 | A4:1 G4:1 E4:1 C4:1 | D4:1 E4:1 E4:1 D4:1 | C4:1 D4:2 R:1 |" +
+      "C4:0.5 D4:0.5 E4:1 G4:1 G4:1 | A4:1 G4:1 E4:1 C4:1 | D4:1 E4:1 E4:1 D4:1 | C4:2 C4:2",
+  },
+  {
+    id: "michael-row",
+    title: "Michael, Row the Boat Ashore",
+    composer: "Traditional",
+    level: 2,
+    bpm: 108,
+    beatsPerMeasure: 4,
+    license: "PD",
+    attribution: "Traditional spiritual. Public domain. Engraving © Piano Tutor, CC0.",
+    blurb: "Hallelujah!",
+    right:
+      "C4:1 E4:1 G4:2 | G4:1 A4:1 G4:1 E4:1 | C4:1 E4:1 G4:1 E4:1 | D4:2 R:2 |" +
+      "C4:1 E4:1 G4:2 | G4:1 A4:1 G4:1 E4:1 | E4:1 D4:1 C4:2 | C4:4",
+  },
+  {
+    id: "deck-the-halls",
+    title: "Deck the Halls",
+    composer: "Traditional",
+    level: 3,
+    bpm: 120,
+    beatsPerMeasure: 4,
+    license: "PD",
+    attribution: "Traditional Welsh carol. Public domain. Engraving © Piano Tutor, CC0.",
+    blurb: "Fa la la la la!",
+    right:
+      "G4:1 F4:1 E4:1 D4:1 | C4:1 D4:1 E4:1 C4:1 | D4:1 E4:1 F4:1 D4:1 | E4:1 F4:1 G4:2 |" +
+      "G4:1 F4:1 E4:1 D4:1 | C4:1 D4:1 E4:1 C4:1 | D4:0.5 E4:0.5 D4:0.5 C4:0.5 B3:1 C4:1 | D4:2 C4:2",
+  },
+  {
+    id: "canon-in-d",
+    title: "Canon in D (Theme)",
+    composer: "Johann Pachelbel",
+    level: 4,
+    bpm: 100,
+    beatsPerMeasure: 4,
+    license: "PD",
+    attribution: "Pachelbel, Canon in D (c. 1680). Public domain. Engraving © Piano Tutor, CC0.",
+    blurb: "The wedding favourite.",
+    right:
+      "F#5:2 E5:2 | D5:2 C#5:2 | B4:2 A4:2 | B4:2 C#5:2 |" +
+      "D5:2 C#5:2 | B4:2 A4:2 | G4:2 F#4:2 | G4:2 E4:2",
+  },
+  {
+    id: "greensleeves",
+    title: "Greensleeves",
+    composer: "Traditional",
+    level: 4,
+    bpm: 100,
+    beatsPerMeasure: 3,
+    license: "PD",
+    attribution: "Traditional English (c. 1580). Public domain. Engraving © Piano Tutor, CC0.",
+    blurb: "A haunting Tudor melody.",
+    right:
+      "A4:1 | C5:2 D5:1 | E5:1.5 F5:0.5 E5:1 | D5:2 B4:1 | G4:1.5 A4:0.5 B4:1 |" +
+      "C5:2 A4:1 | A4:1.5 G#4:0.5 A4:1 | B4:2 G#4:1 | E4:3",
+  },
+  {
+    id: "habanera",
+    title: "Habanera (from Carmen)",
+    composer: "Georges Bizet",
+    level: 4,
+    bpm: 92,
+    beatsPerMeasure: 4,
+    license: "PD",
+    attribution: "Bizet, 'Habanera' from Carmen (1875). Public domain. Engraving © Piano Tutor, CC0.",
+    blurb: "Love is a rebellious bird.",
+    right:
+      "D5:1 C#5:0.5 C5:0.5 B4:0.5 A#4:0.5 A4:1 | A4:0.5 A4:0.5 A4:1 R:2 |" +
+      "D5:1 C#5:0.5 C5:0.5 B4:0.5 A#4:0.5 A4:1 | A4:0.5 A4:0.5 A4:1 R:2",
+  },
+  {
+    id: "turkish-march",
+    title: "Rondo alla Turca (Theme)",
+    composer: "Wolfgang Amadeus Mozart",
+    level: 5,
+    bpm: 120,
+    beatsPerMeasure: 4,
+    license: "PD",
+    attribution: "Mozart, 'Rondo alla Turca' from Sonata K.331 (1783). Public domain. Engraving © Piano Tutor, CC0.",
+    blurb: "The dazzling Turkish March.",
+    right:
+      "B4:0.5 A4:0.5 G#4:0.5 A4:0.5 C5:1 R:1 | D5:0.5 C5:0.5 B4:0.5 C5:0.5 E5:1 R:1 |" +
+      "F5:0.5 E5:0.5 D#5:0.5 E5:0.5 B5:0.5 A5:0.5 G#5:0.5 A5:0.5 | C6:0.5 B5:0.5 A5:0.5 G#5:0.5 A5:1 R:1",
+  },
 ];
 
 async function main() {

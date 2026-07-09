@@ -180,5 +180,159 @@
     "license": "PD",
     "attribution": "Petzold, Minuet in G (BWV Anh. 114). Public domain. Engraving © Piano Tutor, CC0.",
     "blurb": "An elegant dance from Bach's notebook."
+  },
+  {
+    "id": "rain-rain-go-away",
+    "title": "Rain, Rain, Go Away",
+    "composer": "Traditional",
+    "level": 1,
+    "bpm": 96,
+    "beatsPerMeasure": 4,
+    "hands": [
+      "right"
+    ],
+    "license": "PD",
+    "attribution": "Traditional nursery tune. Public domain. Engraving © Piano Tutor, CC0.",
+    "blurb": "Come again another day!"
+  },
+  {
+    "id": "lightly-row",
+    "title": "Lightly Row",
+    "composer": "Traditional",
+    "level": 2,
+    "bpm": 104,
+    "beatsPerMeasure": 4,
+    "hands": [
+      "right"
+    ],
+    "license": "PD",
+    "attribution": "Traditional folk tune. Public domain. Engraving © Piano Tutor, CC0.",
+    "blurb": "O'er the shining waves we go."
+  },
+  {
+    "id": "yankee-doodle",
+    "title": "Yankee Doodle",
+    "composer": "Traditional",
+    "level": 2,
+    "bpm": 120,
+    "beatsPerMeasure": 4,
+    "hands": [
+      "right"
+    ],
+    "license": "PD",
+    "attribution": "Traditional American tune. Public domain. Engraving © Piano Tutor, CC0.",
+    "blurb": "Stuck a feather in his cap!"
+  },
+  {
+    "id": "this-old-man",
+    "title": "This Old Man",
+    "composer": "Traditional",
+    "level": 2,
+    "bpm": 116,
+    "beatsPerMeasure": 4,
+    "hands": [
+      "right"
+    ],
+    "license": "PD",
+    "attribution": "Traditional children's song. Public domain. Engraving © Piano Tutor, CC0.",
+    "blurb": "He played knick-knack!"
+  },
+  {
+    "id": "oh-susanna",
+    "title": "Oh! Susanna",
+    "composer": "Stephen Foster",
+    "level": 2,
+    "bpm": 120,
+    "beatsPerMeasure": 4,
+    "hands": [
+      "right"
+    ],
+    "license": "PD",
+    "attribution": "Stephen Foster, 'Oh! Susanna' (1848). Public domain. Engraving © Piano Tutor, CC0.",
+    "blurb": "A banjo on my knee."
+  },
+  {
+    "id": "michael-row",
+    "title": "Michael, Row the Boat Ashore",
+    "composer": "Traditional",
+    "level": 2,
+    "bpm": 108,
+    "beatsPerMeasure": 4,
+    "hands": [
+      "right"
+    ],
+    "license": "PD",
+    "attribution": "Traditional spiritual. Public domain. Engraving © Piano Tutor, CC0.",
+    "blurb": "Hallelujah!"
+  },
+  {
+    "id": "deck-the-halls",
+    "title": "Deck the Halls",
+    "composer": "Traditional",
+    "level": 3,
+    "bpm": 120,
+    "beatsPerMeasure": 4,
+    "hands": [
+      "right"
+    ],
+    "license": "PD",
+    "attribution": "Traditional Welsh carol. Public domain. Engraving © Piano Tutor, CC0.",
+    "blurb": "Fa la la la la!"
+  },
+  {
+    "id": "canon-in-d",
+    "title": "Canon in D (Theme)",
+    "composer": "Johann Pachelbel",
+    "level": 4,
+    "bpm": 100,
+    "beatsPerMeasure": 4,
+    "hands": [
+      "right"
+    ],
+    "license": "PD",
+    "attribution": "Pachelbel, Canon in D (c. 1680). Public domain. Engraving © Piano Tutor, CC0.",
+    "blurb": "The wedding favourite."
+  },
+  {
+    "id": "greensleeves",
+    "title": "Greensleeves",
+    "composer": "Traditional",
+    "level": 4,
+    "bpm": 100,
+    "beatsPerMeasure": 3,
+    "hands": [
+      "right"
+    ],
+    "license": "PD",
+    "attribution": "Traditional English (c. 1580). Public domain. Engraving © Piano Tutor, CC0.",
+    "blurb": "A haunting Tudor melody."
+  },
+  {
+    "id": "habanera",
+    "title": "Habanera (from Carmen)",
+    "composer": "Georges Bizet",
+    "level": 4,
+    "bpm": 92,
+    "beatsPerMeasure": 4,
+    "hands": [
+      "right"
+    ],
+    "license": "PD",
+    "attribution": "Bizet, 'Habanera' from Carmen (1875). Public domain. Engraving © Piano Tutor, CC0.",
+    "blurb": "Love is a rebellious bird."
+  },
+  {
+    "id": "turkish-march",
+    "title": "Rondo alla Turca (Theme)",
+    "composer": "Wolfgang Amadeus Mozart",
+    "level": 5,
+    "bpm": 120,
+    "beatsPerMeasure": 4,
+    "hands": [
+      "right"
+    ],
+    "license": "PD",
+    "attribution": "Mozart, 'Rondo alla Turca' from Sonata K.331 (1783). Public domain. Engraving © Piano Tutor, CC0.",
+    "blurb": "The dazzling Turkish March."
   }
 ]

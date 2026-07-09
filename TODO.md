@@ -1,2 +1,0 @@
-- the library needs to be larger (but this can wait)
-- the score currently does not register incorrect key presses as negative scoring, so if you finish you get 100%
