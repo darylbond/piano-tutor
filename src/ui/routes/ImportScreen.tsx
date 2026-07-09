@@ -1,9 +1,13 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { Song } from "@/engine/types";
 import { parseMidiToSong, slug, type MidiParseResult } from "@/library/midi-import";
 import { saveUserSong } from "@/library/user-songs";
+import { Synth } from "@/engine/synth";
+import { songLengthBeats } from "@/library/catalog";
+import { beatsToMs } from "@/engine/music";
 import { BigButton } from "@/ui/components/BigButton";
+import { useSettings } from "@/store/settings";
 import "./ImportScreen.css";
 
 export function ImportScreen() {
@@ -14,6 +18,32 @@ export function ImportScreen() {
   const [title, setTitle] = useState("");
   const [track, setTrack] = useState<number | undefined>(undefined);
   const [error, setError] = useState<string | null>(null);
+  const [previewing, setPreviewing] = useState(false);
+  const synthRef = useRef(new Synth());
+  const previewTimer = useRef<number | undefined>(undefined);
+
+  useEffect(() => {
+    const synth = synthRef.current;
+    return () => {
+      synth.stop();
+      window.clearTimeout(previewTimer.current);
+    };
+  }, []);
+
+  function stopPreview() {
+    synthRef.current.stop();
+    window.clearTimeout(previewTimer.current);
+    setPreviewing(false);
+  }
+
+  function playPreview(song: Song) {
+    stopPreview();
+    synthRef.current.setVolume(useSettings.getState().volume);
+    synthRef.current.playSong(song.notes, song.bpm, 0, 1);
+    setPreviewing(true);
+    const ms = beatsToMs(songLengthBeats(song.notes), song.bpm) + 500;
+    previewTimer.current = window.setTimeout(() => setPreviewing(false), ms);
+  }
 
   async function onFile(file: File) {
     setError(null);
@@ -36,12 +66,14 @@ export function ImportScreen() {
 
   function reparseTrack(index: number | undefined) {
     if (!bufferRef.current) return;
+    stopPreview();
     setTrack(index);
     setParsed(parseMidiToSong(bufferRef.current, title || "Song", { trackIndex: index }));
   }
 
   async function save() {
     if (!parsed) return;
+    stopPreview();
     const finalTitle = title.trim() || "My Song";
     const song: Song = {
       ...parsed.song,
@@ -108,14 +140,31 @@ export function ImportScreen() {
             </label>
           )}
 
-          <p className="import__hint">
-            Tip: if it sounds wrong, try a different track — many files put the
-            melody on its own part.
-          </p>
+          <div className="import__actions">
+            {previewing ? (
+              <BigButton variant="ghost" icon="⏹" onClick={stopPreview}>
+                Stop
+              </BigButton>
+            ) : (
+              <BigButton
+                variant="ghost"
+                icon="🔊"
+                onClick={() => playPreview(song)}
+                disabled={song.notes.length === 0}
+              >
+                Preview this part
+              </BigButton>
+            )}
+            <BigButton variant="secondary" icon="💾" onClick={save}>
+              Save & play
+            </BigButton>
+          </div>
 
-          <BigButton variant="secondary" size="lg" icon="💾" onClick={save}>
-            Save & play
-          </BigButton>
+          <p className="import__hint">
+            Tip: press <strong>Preview</strong> to hear the chosen part. If it
+            sounds wrong, try another track — many files put the melody on its
+            own part.
+          </p>
         </div>
       )}
 

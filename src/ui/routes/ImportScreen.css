@@ -57,6 +57,12 @@
   font-weight: 700;
   color: var(--c-text-soft);
 }
+.import__actions {
+  display: flex;
+  gap: var(--sp-3);
+  flex-wrap: wrap;
+  justify-content: center;
+}
 .import__hint {
   color: var(--c-text-soft);
   font-size: var(--fs-sm);
