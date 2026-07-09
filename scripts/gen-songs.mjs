@@ -171,6 +171,77 @@ const SONGS = [
       "C4:1 C4:1 C4:1 G3:1 | A3:1 A3:1 G3:2 | E4:1 E4:1 D4:1 D4:1 | C4:4 |" +
       "G3:1 C4:1 C4:1 C4:1 | G3:1 A3:1 A3:1 G3:1 | E4:0.5 E4:0.5 D4:0.5 D4:0.5 C4:2",
   },
+  {
+    id: "when-the-saints",
+    title: "When the Saints Go Marching In",
+    composer: "Traditional",
+    level: 2,
+    bpm: 112,
+    beatsPerMeasure: 4,
+    license: "PD",
+    attribution: "Traditional spiritual. Public domain. Engraving © Piano Tutor, CC0.",
+    blurb: "Oh, when the saints…",
+    right:
+      "C4:1 E4:1 F4:1 G4:2 R:1 | C4:1 E4:1 F4:1 G4:2 R:1 |" +
+      "C4:1 E4:1 F4:1 G4:1 E4:1 C4:1 E4:1 D4:1 | C4:4",
+  },
+  {
+    id: "jingle-bells",
+    title: "Jingle Bells",
+    composer: "James Lord Pierpont",
+    level: 2,
+    bpm: 120,
+    beatsPerMeasure: 4,
+    license: "PD",
+    attribution: "J. L. Pierpont, 'Jingle Bells' (1857). Public domain. Engraving © Piano Tutor, CC0.",
+    blurb: "Dashing through the snow!",
+    right:
+      "E4:1 E4:1 E4:2 | E4:1 E4:1 E4:2 | E4:1 G4:1 C4:1 D4:1 | E4:4 |" +
+      "F4:1 F4:1 F4:1 F4:1 | F4:1 E4:1 E4:1 E4:0.5 E4:0.5 | E4:1 D4:1 D4:1 E4:1 | D4:2 G4:2",
+  },
+  {
+    id: "happy-birthday",
+    title: "Happy Birthday",
+    composer: "Hill sisters",
+    level: 3,
+    bpm: 108,
+    beatsPerMeasure: 3,
+    license: "PD",
+    attribution: "Mildred & Patty Hill, 'Good Morning to All' (1893). Public domain (US, 2016). Engraving © Piano Tutor, CC0.",
+    blurb: "Sing it to someone special!",
+    right:
+      "G4:0.5 G4:0.5 A4:1 G4:1 | C5:1 B4:2 | G4:0.5 G4:0.5 A4:1 G4:1 | D5:1 C5:2 |" +
+      "G4:0.5 G4:0.5 G5:1 E5:1 | C5:1 B4:1 A4:1 | F5:0.5 F5:0.5 E5:1 C5:1 | D5:1 C5:2",
+  },
+  {
+    id: "fur-elise",
+    title: "Für Elise (Theme)",
+    composer: "Ludwig van Beethoven",
+    level: 3,
+    bpm: 100,
+    beatsPerMeasure: 3,
+    license: "PD",
+    attribution: "Beethoven, Bagatelle in A minor 'Für Elise' (1810). Public domain. Engraving © Piano Tutor, CC0.",
+    blurb: "One of the most famous tunes ever.",
+    right:
+      "E5:0.5 D#5:0.5 E5:0.5 D#5:0.5 E5:0.5 B4:0.5 | D5:0.5 C5:0.5 A4:1 | C4:0.5 E4:0.5 A4:0.5 B4:0.5 E4:0.5 G#4:0.5 |" +
+      "B4:0.5 C5:0.5 E4:1 | E5:0.5 D#5:0.5 E5:0.5 D#5:0.5 E5:0.5 B4:0.5 | D5:0.5 C5:0.5 A4:1 |" +
+      "C4:0.5 E4:0.5 A4:0.5 B4:0.5 E4:0.5 C5:0.5 | B4:0.5 A4:0.5 A4:1",
+  },
+  {
+    id: "minuet-in-g",
+    title: "Minuet in G",
+    composer: "Christian Petzold",
+    level: 4,
+    bpm: 120,
+    beatsPerMeasure: 3,
+    license: "PD",
+    attribution: "Petzold, Minuet in G (BWV Anh. 114). Public domain. Engraving © Piano Tutor, CC0.",
+    blurb: "An elegant dance from Bach's notebook.",
+    right:
+      "D5:1 G4:0.5 A4:0.5 B4:0.5 C5:0.5 | D5:1 G4:1 G4:1 | E5:1 C5:0.5 D5:0.5 E5:0.5 F#5:0.5 | G5:1 G4:1 G4:1 |" +
+      "C5:1 D5:0.5 C5:0.5 B4:0.5 A4:0.5 | B4:1 C5:0.5 B4:0.5 A4:0.5 G4:0.5 | F#4:1 G4:0.5 A4:0.5 B4:0.5 G4:0.5 | A4:3",
+  },
 ];
 
 async function main() {

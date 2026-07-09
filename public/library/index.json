@@ -110,5 +110,75 @@
     "license": "PD",
     "attribution": "Traditional melody. Public domain. Engraving © Piano Tutor, CC0.",
     "blurb": "E-I-E-I-O!"
+  },
+  {
+    "id": "when-the-saints",
+    "title": "When the Saints Go Marching In",
+    "composer": "Traditional",
+    "level": 2,
+    "bpm": 112,
+    "beatsPerMeasure": 4,
+    "hands": [
+      "right"
+    ],
+    "license": "PD",
+    "attribution": "Traditional spiritual. Public domain. Engraving © Piano Tutor, CC0.",
+    "blurb": "Oh, when the saints…"
+  },
+  {
+    "id": "jingle-bells",
+    "title": "Jingle Bells",
+    "composer": "James Lord Pierpont",
+    "level": 2,
+    "bpm": 120,
+    "beatsPerMeasure": 4,
+    "hands": [
+      "right"
+    ],
+    "license": "PD",
+    "attribution": "J. L. Pierpont, 'Jingle Bells' (1857). Public domain. Engraving © Piano Tutor, CC0.",
+    "blurb": "Dashing through the snow!"
+  },
+  {
+    "id": "happy-birthday",
+    "title": "Happy Birthday",
+    "composer": "Hill sisters",
+    "level": 3,
+    "bpm": 108,
+    "beatsPerMeasure": 3,
+    "hands": [
+      "right"
+    ],
+    "license": "PD",
+    "attribution": "Mildred & Patty Hill, 'Good Morning to All' (1893). Public domain (US, 2016). Engraving © Piano Tutor, CC0.",
+    "blurb": "Sing it to someone special!"
+  },
+  {
+    "id": "fur-elise",
+    "title": "Für Elise (Theme)",
+    "composer": "Ludwig van Beethoven",
+    "level": 3,
+    "bpm": 100,
+    "beatsPerMeasure": 3,
+    "hands": [
+      "right"
+    ],
+    "license": "PD",
+    "attribution": "Beethoven, Bagatelle in A minor 'Für Elise' (1810). Public domain. Engraving © Piano Tutor, CC0.",
+    "blurb": "One of the most famous tunes ever."
+  },
+  {
+    "id": "minuet-in-g",
+    "title": "Minuet in G",
+    "composer": "Christian Petzold",
+    "level": 4,
+    "bpm": 120,
+    "beatsPerMeasure": 3,
+    "hands": [
+      "right"
+    ],
+    "license": "PD",
+    "attribution": "Petzold, Minuet in G (BWV Anh. 114). Public domain. Engraving © Piano Tutor, CC0.",
+    "blurb": "An elegant dance from Bach's notebook."
   }
 ]
