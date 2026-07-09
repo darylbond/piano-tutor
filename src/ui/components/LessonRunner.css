@@ -1,0 +1,50 @@
+.lesson {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-5);
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.lesson__progress {
+  display: flex;
+  gap: var(--sp-2);
+}
+.lesson__dot {
+  width: 12px;
+  height: 12px;
+  border-radius: var(--r-pill);
+  background: var(--c-line);
+  transition: background var(--dur-med) ease;
+}
+.lesson__dot.on {
+  background: var(--c-green);
+}
+
+.lesson__bubble {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  background: var(--c-card);
+  border-radius: var(--r-lg);
+  padding: var(--sp-5) var(--sp-6);
+  box-shadow: var(--shadow-md);
+  text-align: center;
+  min-height: 96px;
+}
+.lesson__emoji {
+  font-size: 3rem;
+  line-height: 1;
+}
+.lesson__text {
+  margin: 0;
+  font-size: var(--fs-lg);
+  font-weight: 700;
+}
+
+.lesson__actions {
+  min-height: 64px;
+  display: flex;
+  align-items: center;
+}
